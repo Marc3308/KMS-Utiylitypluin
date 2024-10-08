@@ -1,0 +1,14 @@
+name: Monsterplugin
+version: '1.19.4'
+main: me.marc3308.monsterplugin.Monsterplugin
+api-version: 1.19
+
+commands:
+  spinfo:
+    description: info about spawn
+  delwol:
+    description: delets the world
+  loadit:
+    description: dont use
+  givetime:
+    description: dont use
