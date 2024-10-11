@@ -116,6 +116,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         }
 
 
+        Bukkit.getPluginManager().registerEvents(new mobdrops(),this);
         Bukkit.getPluginManager().registerEvents(new spiderspawn(),this);
         Bukkit.getPluginManager().registerEvents(new spawnerdelete(),this);
         Bukkit.getPluginManager().registerEvents(new infentare(),this);
@@ -170,6 +171,11 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
             eiss.set("mobs"+".VILLAGER",false);
             eiss.set("mobs"+".ZOMBIE_VILLAGER",false);
             eiss.set("mobs"+".WANDERING_TRADER",false);
+
+            eiss.set("nomobdrops"+".WITCH",false);
+
+            eiss.set("nomobxp"+".WITCH",false);
+
 
             eiss.set("enchantments"+".MaxLv",10);
             eiss.set("enchantments"+".MENDING",false);
