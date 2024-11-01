@@ -63,11 +63,11 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
                             long newMinecraftTime = (long) (cycleProgress * 24000L);
 
                             //warnungen
-                            if(now.getHour()==22 && now.getMinute()==0 && now.getSecond()<2)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.GREEN+"Warnung",ChatColor.GREEN+"Der Server schließt in einer Stunde");
-                            if(now.getHour()==22 && now.getMinute()==30 && now.getSecond()<2)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.YELLOW+"Warnung",ChatColor.YELLOW+"Der Server schließt in einer Halben Stunde");
-                            if(now.getHour()==22 && now.getMinute()==55 && now.getSecond()<2)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.RED+"Warnung",ChatColor.RED+"Der Server schließt in fünf Minuten");
-                            if(now.getHour()==22 && now.getMinute()==59 && now.getSecond()>=45)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.DARK_RED+String.valueOf((58-now.getSecond())),"");
-                            if(now.getHour()==22 && now.getMinute()==59 && now.getSecond()>=58)for (Player p : Bukkit.getOnlinePlayers())p.kick();
+                            if(now.getHour()==23 && now.getMinute()==0 && now.getSecond()<2)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.GREEN+"Warnung",ChatColor.GREEN+"Der Server schließt in einer Stunde");
+                            if(now.getHour()==23 && now.getMinute()==30 && now.getSecond()<2)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.YELLOW+"Warnung",ChatColor.YELLOW+"Der Server schließt in einer Halben Stunde");
+                            if(now.getHour()==23 && now.getMinute()==55 && now.getSecond()<2)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.RED+"Warnung",ChatColor.RED+"Der Server schließt in fünf Minuten");
+                            if(now.getHour()==23 && now.getMinute()==59 && now.getSecond()>=45)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.DARK_RED+String.valueOf((58-now.getSecond())),"");
+                            if(now.getHour()==23 && now.getMinute()==59 && now.getSecond()>=58)for (Player p : Bukkit.getOnlinePlayers())p.kick();
 
                             // Set the world time, making sure it stays within the 0-24000 ticks range
                             World world = Bukkit.getWorld("world");
