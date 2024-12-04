@@ -1,9 +1,6 @@
 package me.marc3308.monsterplugin;
 
-import me.marc3308.monsterplugin.commands.delet;
-import me.marc3308.monsterplugin.commands.info;
-import me.marc3308.monsterplugin.commands.loadit;
-import me.marc3308.monsterplugin.commands.timecom;
+import me.marc3308.monsterplugin.commands.*;
 import me.marc3308.monsterplugin.eventlistener.*;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -30,7 +27,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
     public static ArrayList<Location> chunklust=new ArrayList<>();
     public static int Bignumb=0;
 
-    private LocalDateTime cycleStartTime =LocalDateTime.now();
+    public static LocalDateTime cycleStartTime =LocalDateTime.now();
     public static Monsterplugin plugin;
 
     @Override
@@ -130,6 +127,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         getCommand("loadit").setExecutor(new loadit());
         getCommand("spinfo").setExecutor(new info());
         getCommand("givetime").setExecutor(new timecom());
+        getCommand("worldtimeset").setExecutor(new settime());;
         //getCommand("delwol").setExecutor(new delet());
 
         if(eiss.get("orgen")==null){

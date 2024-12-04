@@ -6,7 +6,7 @@
 
     <groupId>me.marc3308</groupId>
     <artifactId>KMS-Monsterplugin</artifactId>
-    <version>1.19.4</version>
+    <version>1.21.1</version>
     <packaging>jar</packaging>
 
     <name>Monsterplugin</name>

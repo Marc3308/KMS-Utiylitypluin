@@ -38,16 +38,13 @@ public class spiderspawn implements Listener {
         //check if in cave
         if(p.getLocation().getBlock().getLightLevel()>=7)return;
         Block block = p.getLocation().getBlock();
-        if(block.getLocation().getBlockY()==p.getWorld().getHighestBlockAt(p.getLocation()).getLocation().add(0,1,0).getBlockY())return;
+        if(block.getLocation().getBlockY()>=p.getWorld().getHighestBlockAt(p.getLocation()).getY())return;
 
-        while (block.getType().isAir()){
-            block = block.getRelative(0,1,0);
-        }
+        //check down for cave?
+        if(!Steine.contains(p.getLocation().subtract(0,1,0).getBlock().getType()))return;
 
-        if(!Steine.contains(block.getType()))return;
-
+        //spawn spieder
         e.setCancelled(true);
-
         Mob spinne= (Mob) e.getEntity().getWorld().spawnEntity(p.getLocation(), EntityType.CAVE_SPIDER);
 
     }

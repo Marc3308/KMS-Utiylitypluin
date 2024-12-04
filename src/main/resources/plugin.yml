@@ -6,9 +6,16 @@ api-version: 1.19
 commands:
   spinfo:
     description: info about spawn
+    permission: op
   delwol:
     description: delets the world
+    permission: op
   loadit:
     description: dont use
+    permission: op
   givetime:
     description: dont use
+    permission: op
+  worldtimeset:
+    description: sets the world time
+    permission: op
