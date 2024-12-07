@@ -26,11 +26,11 @@ public class playerlog implements CommandExecutor{
         if(!(sender instanceof Player))return false;
         Player p= (Player) sender;
         if(!p.isOp())return false;
-        openinv(p,args.length>=1 ? args[0] : null,1);
+        openinv(p,args.length>=1 ? args[0] : null,1,"LastOfLog");
         return false;
     }
 
-    public static void openinv(Player p, String one, int Seite){
+    public static void openinv(Player p, String one, int Seite, String Sorter){
         // Include data from stats files
         File statsFolder = new File(getServer().getWorldContainer(), "world/stats");
         ArrayList<SpielerStempel> alltheplayers=new ArrayList<>();
@@ -77,9 +77,9 @@ public class playerlog implements CommandExecutor{
         //creat the allways components
         ItemStack suche=new ItemStack(Material.ANVIL);
         ItemMeta suche_meta=suche.getItemMeta();
-        suche_meta.setDisplayName("Suche");
+        suche_meta.setDisplayName(Sorter);
         ArrayList<String> suche_lore=new ArrayList<>();
-        suche_lore.add("Klicke hier um nach bestimmten Spielern zu suchen [Deaktiviert]");
+        suche_lore.add("Klicke hier um die Sotierung zu ändern");
         suche_meta.setLore(suche_lore);
         suche.setItemMeta(suche_meta);
 
@@ -98,7 +98,17 @@ public class playerlog implements CommandExecutor{
         Loginventar.setItem(47,suche);
 
         //sort it
-        Collections.sort(alltheplayers, (a1,a2) -> Long.compare(a2.getLastoflock(),a1.getLastoflock()));
+        switch (Sorter){
+            case "LastOfLog":
+                Collections.sort(alltheplayers, (a1,a2) -> Long.compare(a2.getLastoflock(),a1.getLastoflock()));
+                break;
+            case "FirstOnLock":
+                Collections.sort(alltheplayers, (a1,a2) -> Long.compare(a1.getFirstonlock(),a2.getFirstonlock()));
+                break;
+            case "MostPlayTime":
+                Collections.sort(alltheplayers, (a1,a2) -> Long.compare(a2.getAllthesecends(),a1.getAllthesecends()));
+                break;
+        }
 
         for (SpielerStempel sp : alltheplayers){
             if(alltheplayers.indexOf(sp)>=46*(Seite-1) && alltheplayers.indexOf(sp)<=46*Seite){
