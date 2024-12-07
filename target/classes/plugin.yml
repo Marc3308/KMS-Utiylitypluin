@@ -1,14 +1,24 @@
 name: Monsterplugin
-version: '1.19.4'
+version: '1.21.1'
 main: me.marc3308.monsterplugin.Monsterplugin
 api-version: 1.19
 
 commands:
   spinfo:
     description: info about spawn
+    permission: op
   delwol:
     description: delets the world
+    permission: op
   loadit:
     description: dont use
+    permission: op
   givetime:
     description: dont use
+    permission: op
+  worldtimeset:
+    description: sets the world time
+    permission: op
+  spielerinfo:
+    description: get the player info log
+    permission: op

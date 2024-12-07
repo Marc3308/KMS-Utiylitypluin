@@ -47,6 +47,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
                             //tagnacht
                             int wishtime=eiss.getInt("daynightinminuten")*60;
                             double ticksPerSecond = 24000L / (double) wishtime;
+
                             // Get the current time in the real world
                             LocalDateTime now = LocalDateTime.now();
 
@@ -121,6 +122,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new nogrow(),this);
         Bukkit.getPluginManager().registerEvents(new destorydiamonds(),this);
         Bukkit.getPluginManager().registerEvents(new onspawn(),this);
+        Bukkit.getPluginManager().registerEvents(new guicontroller(),this);
         if(eiss.getBoolean("orgen"+".Starteating"))Bukkit.getPluginManager().registerEvents(new oregen(),this);
         if(eiss.getBoolean("orgen"+".RemoveRegion"))Bukkit.getPluginManager().registerEvents(new regiondelete(),this);
 
@@ -128,6 +130,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         getCommand("spinfo").setExecutor(new info());
         getCommand("givetime").setExecutor(new timecom());
         getCommand("worldtimeset").setExecutor(new settime());;
+        getCommand("spielerinfo").setExecutor(new playerlog());
         //getCommand("delwol").setExecutor(new delet());
 
         if(eiss.get("orgen")==null){
@@ -186,7 +189,6 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
 
 
         }
-
 
         try {
             eiss.save(file);
