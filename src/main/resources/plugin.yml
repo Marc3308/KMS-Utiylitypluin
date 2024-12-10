@@ -21,4 +21,4 @@ commands:
     permission: op
   spielerinfo:
     description: get the player info log
-    permission: op
+    permission: parteleitung

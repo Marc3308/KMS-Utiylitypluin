@@ -1,5 +1,7 @@
 package me.marc3308.monsterplugin.commands;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -111,7 +113,7 @@ public class playerlog implements CommandExecutor{
         }
 
         for (SpielerStempel sp : alltheplayers){
-            if(alltheplayers.indexOf(sp)>=46*(Seite-1) && alltheplayers.indexOf(sp)<=46*Seite){
+            if(alltheplayers.indexOf(sp)>=44*(Seite-1) && alltheplayers.indexOf(sp)<=44*Seite){
                 // Extract playtime in ticks
                 int allthesecends = sp.getAllthesecends();
                 int hours = (allthesecends/60)/60;
@@ -132,7 +134,18 @@ public class playerlog implements CommandExecutor{
                 skull_lore.add("LastLogin: "+dateFormat.format(new Date(sp.getLastonlock())));
                 skull_lore.add("LastLogOut: "+dateFormat.format(new Date(sp.getLastoflock())));
                 skull.setDisplayName(sp.getName());
-                skull.setOwner(sp.getName());
+                if(Bukkit.getPlayer(sp.getName())==null){
+                    String base64 = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWU3NzAwMDk2YjVhMmE4NzM4NmQ2MjA1YjRkZGNjMTRmZDMzY2YyNjkzNjJmYTY4OTM0OTk0MzFjZTc3YmY5In19fQ==";
+
+                    // Create a PlayerProfile with a random UUID and apply the base64 texture
+                    PlayerProfile profile = getServer().createProfile(UUID.randomUUID(), "CustomHead");
+                    profile.getProperties().add(new ProfileProperty("textures", base64));
+
+                    // Set the profile to the skull meta
+                    skull.setPlayerProfile(profile);
+                } else {
+                    skull.setOwner(sp.getName());
+                }
                 skull.setLore(skull_lore);
                 head.setItemMeta(skull);
                 Loginventar.setItem(Loginventar.firstEmpty(),head);
