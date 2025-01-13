@@ -15,10 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -40,13 +37,18 @@ public class playerlog implements CommandExecutor{
         if (statsFolder.exists() && statsFolder.isDirectory()) {
             for (File statsFile : statsFolder.listFiles()) {
                 try {
+
                     //get Offline Player
                     String uuidString = statsFile.getName().replace(".json", "");
                     OfflinePlayer pp= Bukkit.getOfflinePlayer(UUID.fromString(uuidString));
+
+
+
                     //add all players
                     alltheplayers.add(new SpielerStempel(pp.getName()!=null ? pp.getName() : "Error"
                             ,pp.getStatistic(Statistic.PLAY_ONE_MINUTE)/20
-                            ,pp.getFirstPlayed(),pp.getLastLogin(),pp.getLastSeen()));
+                            ,pp.getFirstPlayed(),pp.getLastLogin(),pp.getLastSeen()
+                            ,pp.isWhitelisted()));
                 } catch (Exception e) {
                     System.out.println("Failed to process stats file: " + statsFile.getName());
                 }
@@ -67,6 +69,7 @@ public class playerlog implements CommandExecutor{
                     p.sendMessage(ChatColor.DARK_GREEN+"FirstPlayed: "+ChatColor.GREEN+dateFormat.format(new Date(sp.getFirstonlock())));
                     p.sendMessage(ChatColor.DARK_GREEN+"LastLogin: "+ChatColor.GREEN+dateFormat.format(new Date(sp.getLastonlock())));
                     p.sendMessage(ChatColor.DARK_GREEN+"LastLogOut: "+ChatColor.GREEN+dateFormat.format(new Date(sp.getLastoflock())));
+                    p.sendMessage(ChatColor.DARK_GREEN+"Whitlistet: "+(sp.isWhitlistet() ? ChatColor.RED+"Nein" : ChatColor.GREEN+"Ja"));
                     return;
                 }
             }
@@ -110,6 +113,9 @@ public class playerlog implements CommandExecutor{
             case "MostPlayTime":
                 Collections.sort(alltheplayers, (a1,a2) -> Long.compare(a2.getAllthesecends(),a1.getAllthesecends()));
                 break;
+            case "PlayerName":
+                alltheplayers.sort(Comparator.comparing(SpielerStempel::getName, String.CASE_INSENSITIVE_ORDER));
+                break;
         }
 
         for (SpielerStempel sp : alltheplayers){
@@ -133,6 +139,7 @@ public class playerlog implements CommandExecutor{
                 skull_lore.add("FirstPlayed: "+dateFormat.format(new Date(sp.getFirstonlock())));
                 skull_lore.add("LastLogin: "+dateFormat.format(new Date(sp.getLastonlock())));
                 skull_lore.add("LastLogOut: "+dateFormat.format(new Date(sp.getLastoflock())));
+                skull_lore.add("Whitlistet: "+sp.isWhitlistet());
                 skull.setDisplayName(sp.getName());
                 if(Bukkit.getPlayer(sp.getName())==null){
                     String base64 = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWU3NzAwMDk2YjVhMmE4NzM4NmQ2MjA1YjRkZGNjMTRmZDMzY2YyNjkzNjJmYTY4OTM0OTk0MzFjZTc3YmY5In19fQ==";
@@ -154,6 +161,25 @@ public class playerlog implements CommandExecutor{
 
         p.openInventory(Loginventar);
     }
+
+    public static void opneplayerinf(Player p,UUID uuid){
+        // Locate the player's .dat file
+        File playerFile = new File(getServer().getWorldContainer(), "world/playerdata/" + uuid + ".dat");
+        if (!playerFile.exists()) {
+            p.sendMessage(ChatColor.RED+"Die datei wurde nicht gefunden");
+            p.closeInventory();
+            return;
+        }
+
+        playerFile
+
+
+
+
+
+
+    }
+
 }
 
 class SpielerStempel {
@@ -163,18 +189,26 @@ class SpielerStempel {
     private long Firstonlock;
     private long Lastonlock;
     private long Lastoflock;
+    private boolean Whitlistet;
 
-    public SpielerStempel(String name, int allthesecends, long firstonlock, long lastonlock, long lastoflock){
+
+    public SpielerStempel(String name, int allthesecends, long firstonlock, long lastonlock, long lastoflock, boolean whitlistet){
         this.Name=name;
         this.Allthesecends=allthesecends;
         this.Firstonlock=firstonlock;
         this.Lastonlock=lastonlock;
         this.Lastoflock=lastoflock;
+        this.Whitlistet=whitlistet;
     }
 
     public String getName() {
         return Name;
     }
+
+    public boolean isWhitlistet() {
+        return Whitlistet;
+    }
+
     public int getAllthesecends() {
         return Allthesecends;
     }
@@ -190,4 +224,5 @@ class SpielerStempel {
     public long getLastoflock() {
         return Lastoflock;
     }
+
 }
