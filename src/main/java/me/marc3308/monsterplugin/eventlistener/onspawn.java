@@ -47,45 +47,45 @@ public class onspawn implements Listener {
                     double z=radius * Math.sin(y[0]);
 
                     //kleiner ring
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(x,0,z),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(-x,0,-z),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(x,0,z),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(-x,0,-z),25);
 
                     //mittel ring
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(x*3,0,z*3),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(-x*3,0,-z*3),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(x*3,0,z*3),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(-x*3,0,-z*3),25);
 
                     //großer ring
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(-x*6,0,z*6),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(x*6,0,-z*6),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(-x*6,0,z*6),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(x*6,0,-z*6),25);
 
                     //klein mittel bangreiß
 
                     //greiße der geraden
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(x*3,0,z*3+1),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(x*3,0,-(z*3+1)),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(x*3+1,0,z*3),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(-(x*3+1),0,z*3),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(x*3,0,z*3+1),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(x*3,0,-(z*3+1)),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(x*3+1,0,z*3),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(-(x*3+1),0,z*3),25);
 
                     //mittelgroßer ring dinger
 
                     //schrägen
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(x*3+0.5,0,x*3+0.5),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(x*3+0.5,0,-(x*3+0.5)),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(-(x*3+0.5),0,x*3+0.5),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(-(x*3+0.5),0,-(x*3+0.5)),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(x*3+0.5,0,x*3+0.5),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(x*3+0.5,0,-(x*3+0.5)),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(-(x*3+0.5),0,x*3+0.5),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(-(x*3+0.5),0,-(x*3+0.5)),25);
 
                     //geraden
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(0,0,z*3+1.5),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(0,0,-(z*3+1.5)),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(x*3+1.5,0,0),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(-(x*3+1.5),0,0),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(0,0,z*3+1.5),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(0,0,-(z*3+1.5)),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(x*3+1.5,0,0),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(-(x*3+1.5),0,0),25);
 
 
                     //ovalen
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(x*4+1.5,0,(x+z)*4+1.5),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(x*4+1.5,0,-((x+z)*4+1.5)),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(-((x+z)*4+1.5),0,-(x*4+1.5)),25);
-                    p.getWorld().spawnParticle(Particle.DRIP_LAVA,p.getLocation().add(-((x+z)*4+1.5),0,x*4+1.5),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(x*4+1.5,0,(x+z)*4+1.5),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(x*4+1.5,0,-((x+z)*4+1.5)),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(-((x+z)*4+1.5),0,-(x*4+1.5)),25);
+                    p.getWorld().spawnParticle(Particle.DRIPPING_LAVA,p.getLocation().add(-((x+z)*4+1.5),0,x*4+1.5),25);
 
                     y[0]+=0.1;
                 }

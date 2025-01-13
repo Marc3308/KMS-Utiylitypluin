@@ -2,7 +2,7 @@ me\marc3308\monsterplugin\eventlistener\spawnerdelete.class
 me\marc3308\monsterplugin\commands\timecom.class
 me\marc3308\monsterplugin\eventlistener\spiderspawn.class
 me\marc3308\monsterplugin\commands\loadit.class
-me\marc3308\monsterplugin\commands\SpielerStempel.class
+me\marc3308\monsterplugin\commands\playerlog$1.class
 me\marc3308\monsterplugin\eventlistener\oregen.class
 me\marc3308\monsterplugin\eventlistener\oregen$1.class
 me\marc3308\monsterplugin\eventlistener\guicontroller.class

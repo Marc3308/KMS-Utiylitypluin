@@ -20,5 +20,5 @@ commands:
     description: sets the world time
     permission: op
   spielerinfo:
-    description: get the player info log
-    permission: parteleitung
+    description: get the info
+    permission: siedlungsmod

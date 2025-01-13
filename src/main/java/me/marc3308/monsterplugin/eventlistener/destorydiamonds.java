@@ -43,7 +43,7 @@ public class destorydiamonds implements Listener {
         ItemMeta sitcl_meta= stick.getItemMeta();
         ArrayList<String> sticl_lore=new ArrayList<>();
         sticl_lore.add("Ein Opfer für die Barrriere..");
-        sitcl_meta.addEnchant(Enchantment.DURABILITY,1,false);
+        sitcl_meta.addEnchant(Enchantment.UNBREAKING,1,false);
         sitcl_meta.setLore(sticl_lore);
         stick.setItemMeta(sitcl_meta);
 
