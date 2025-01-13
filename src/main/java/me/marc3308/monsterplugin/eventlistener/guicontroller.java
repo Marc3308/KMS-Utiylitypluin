@@ -28,6 +28,8 @@ public class guicontroller implements Listener {
                             :sorter.equals("FirstOnLock") ? "MostPlayTime"
                             :sorter.equals("MostPlayTime") ? "UUID"
                             :sorter.equals("UUID") ? "PlayerName"
+                            :sorter.equals("PlayerName") ? "RpName"
+                            :sorter.equals("RpName") ? "Spezien"
                             :"LastOfLog";
                     playerlog.openinv(p,null
                             ,(Integer.valueOf(e.getInventory().getItem(51).getItemMeta().getDisplayName()))
