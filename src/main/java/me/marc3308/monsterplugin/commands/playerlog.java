@@ -302,7 +302,7 @@ public class playerlog implements CommandExecutor{
         buch_meta.setDisplayName(monday.format(dateFormat)+" - "+sunday.format(dateFormat));
         buch_meta.setLore(new ArrayList<>(){{
             add("");
-            add(ChatColor.YELLOW+"Linkscklick für "+today.format(dateFormat));
+            add(ChatColor.YELLOW+"Linkscklick für "+LocalDate.now().format(dateFormat));
         }});
         buch.setItemMeta(buch_meta);
 
@@ -368,15 +368,16 @@ public class playerlog implements CommandExecutor{
                     add(ChatColor.YELLOW+"Ausgelogt: "+of.getPersistentDataContainer().get(new NamespacedKey(plugin
                                     ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"auslogtime")
                             ,PersistentDataType.STRING));
-                    int Stunden = of.getPersistentDataContainer().get(new NamespacedKey(plugin
+                    int allthesec=of.getPersistentDataContainer().get(new NamespacedKey(plugin
                                     ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"playtime")
-                            ,PersistentDataType.INTEGER)/60/60;
-                    int minutes = (of.getPersistentDataContainer().get(new NamespacedKey(plugin
-                                    ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"playtime")
-                            ,PersistentDataType.INTEGER)/60)-(Stunden*60);
-                    int seconds = of.getPersistentDataContainer().get(new NamespacedKey(plugin
-                                    ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"playtime")
-                            ,PersistentDataType.INTEGER)-((Stunden*60*60)+(minutes*60));
+                            ,PersistentDataType.INTEGER);
+
+                    //wenn spieler noch on
+                    if(of.isOnline())allthesec+=((of.getLastSeen()-of.getLastLogin())/20/50);
+
+                    int Stunden = allthesec/60/60;
+                    int minutes = (allthesec/60)-(Stunden*60);
+                    int seconds = allthesec-((Stunden*60*60)+(minutes*60));
                     add(ChatColor.YELLOW+"Gesamtspielzeit: "+Stunden+":"+minutes+":"+seconds);
                     add(ChatColor.YELLOW+"Login: "+of.getPersistentDataContainer().get(new NamespacedKey(plugin
                                     ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"logintime")
@@ -385,10 +386,9 @@ public class playerlog implements CommandExecutor{
 
                 gelwolle.setItemMeta(gelwolle_meta);
 
-                for (int j = 0; (j*3) < (of.getPersistentDataContainer().get(new NamespacedKey(plugin
+                for (int j = 0; (j*3) <= (of.getPersistentDataContainer().get(new NamespacedKey(plugin
                                 ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"playtime")
                         ,PersistentDataType.INTEGER)/60/60); j++) {
-
                     if(28+i-(9*j)<0)break; //savty first
                     Loginventar.setItem(28+i-(9*j),gelwolle);
                 }

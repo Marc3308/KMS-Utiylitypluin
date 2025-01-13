@@ -7,13 +7,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
+
 
 import static me.marc3308.monsterplugin.Monsterplugin.plugin;
 
@@ -28,9 +26,20 @@ public class joinleavetracker implements Listener {
         DateTimeFormatter clockdate = DateTimeFormatter.ofPattern("HH:mm:ss");
         if(!p.getPersistentDataContainer().has(new NamespacedKey(plugin
                         ,today.format(dateFormat)+"logintime")
-                , PersistentDataType.STRING))p.getPersistentDataContainer().set(new NamespacedKey(plugin
-                        ,today.format(dateFormat)+"logintime")
-                , PersistentDataType.STRING,today.atTime(LocalTime.now()).format(clockdate));
+                , PersistentDataType.STRING)){
+            p.getPersistentDataContainer().set(new NamespacedKey(plugin
+                            ,today.format(dateFormat)+"logintime")
+                    , PersistentDataType.STRING,today.atTime(LocalTime.now()).format(clockdate));
+            p.getPersistentDataContainer().set(new NamespacedKey(plugin
+                            ,today.format(dateFormat)+"auslogtime")
+                    , PersistentDataType.STRING,today.atTime(LocalTime.now()).format(clockdate));
+            p.getPersistentDataContainer().set(new NamespacedKey(plugin
+                            ,today.format(dateFormat)+"auslog")
+                    , PersistentDataType.STRING,"X:"+p.getLocation().getBlockX()+" Y:"+p.getLocation().getBlockY()+" Z:"+p.getLocation().getBlockZ());
+            p.getPersistentDataContainer().set(new NamespacedKey(plugin
+                            ,today.format(dateFormat)+"playtime")
+                    ,PersistentDataType.INTEGER,0);
+        }
     }
 
     @EventHandler
