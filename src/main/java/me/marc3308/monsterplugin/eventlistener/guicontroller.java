@@ -1,13 +1,14 @@
 package me.marc3308.monsterplugin.eventlistener;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import static me.marc3308.monsterplugin.commands.playerlog.openinv;
-import static me.marc3308.monsterplugin.commands.playerlog.openleaderinv;
+import static me.marc3308.monsterplugin.commands.playerlog.*;
 
 public class guicontroller implements Listener {
 
@@ -41,6 +42,9 @@ public class guicontroller implements Listener {
                 case WRITTEN_BOOK:
                     openleaderinv(p,1, 0);
                     break;
+                case PLAYER_HEAD:
+                    openplayerinv(p, Bukkit.getOfflinePlayer(e.getCurrentItem().getItemMeta().getDisplayName()),0);
+                    break;
             }
 
 
@@ -64,6 +68,29 @@ public class guicontroller implements Listener {
                     break;
                 case BARRIER:
                     openinv(p,null,1,"LastOfLog");
+                    break;
+            }
+        }
+
+        if(e.getView().getTitle().equalsIgnoreCase("§lSpieler Tracker")){
+            e.setCancelled(true);
+            if(e.getCurrentItem()==null)return;
+            switch (e.getCurrentItem().getType()){
+                case ARROW: //zurück for
+                    openplayerinv(p, Bukkit.getOfflinePlayer(e.getInventory().getItem(53).getItemMeta().getDisplayName())
+                            ,Integer.valueOf(e.getCurrentItem().getLore().getFirst()));
+                    break;
+                case BOOK: //anfang
+                    openplayerinv(p, Bukkit.getOfflinePlayer(e.getInventory().getItem(53).getItemMeta().getDisplayName()),0);
+                    break;
+                case BARRIER: //info inv
+                    openinv(p,null,1,"LastOfLog");
+                    break;
+                case GLASS:
+                    if(e.getCurrentItem().getItemMeta().getLore()==null)return;
+                    String[] loc=e.getCurrentItem().getItemMeta().getLore().getFirst().split(":");
+                    p.teleport(new Location(p.getWorld(),Integer.valueOf(loc[2].split(" ")[0]),Integer.valueOf(loc[3].split(" ")[0]),Integer.valueOf(loc[4].split(" ")[0])));
+                    p.closeInventory();
                     break;
             }
         }

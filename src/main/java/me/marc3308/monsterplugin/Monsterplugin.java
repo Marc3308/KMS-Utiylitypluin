@@ -114,6 +114,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         }
 
 
+        Bukkit.getPluginManager().registerEvents(new joinleavetracker(),this);
         Bukkit.getPluginManager().registerEvents(new mobdrops(),this);
         Bukkit.getPluginManager().registerEvents(new spiderspawn(),this);
         Bukkit.getPluginManager().registerEvents(new spawnerdelete(),this);

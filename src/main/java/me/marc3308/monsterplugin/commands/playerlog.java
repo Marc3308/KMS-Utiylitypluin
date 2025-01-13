@@ -16,9 +16,15 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static me.marc3308.monsterplugin.Monsterplugin.plugin;
 import static org.bukkit.Bukkit.getServer;
 
 public class playerlog implements CommandExecutor{
@@ -259,5 +265,159 @@ public class playerlog implements CommandExecutor{
 
         p.openInventory(Loginventar);
 
+    }
+
+    public static void openplayerinv(Player p, OfflinePlayer of, int Woche){
+
+        // Get the current date
+        LocalDate today = LocalDate.now().plusWeeks(Woche);
+
+        // Find the Monday of the current week
+        LocalDate monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate sunday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+        //create the inventory
+        Inventory Loginventar= Bukkit.createInventory(p,54,"§lSpieler Tracker");
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+
+        ItemStack vorpfeil=new ItemStack(Material.ARROW);
+        ItemMeta vorpfeil_meta=vorpfeil.getItemMeta();
+        vorpfeil_meta.setDisplayName(sunday.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).format(dateFormat)+" - "+sunday.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).format(dateFormat));
+        vorpfeil_meta.setLore(new ArrayList<>(){{
+            add(String.valueOf(Woche+1));
+        }});
+        vorpfeil.setItemMeta(vorpfeil_meta);
+
+        ItemStack zurückpfeil=new ItemStack(Material.ARROW);
+        ItemMeta zurückpfeil_meta=zurückpfeil.getItemMeta();
+        zurückpfeil_meta.setDisplayName(monday.with(TemporalAdjusters.previous(DayOfWeek.MONDAY)).format(dateFormat)+" - "+monday.with(TemporalAdjusters.previous(DayOfWeek.SUNDAY)).format(dateFormat));
+        zurückpfeil_meta.setLore(new ArrayList<>(){{
+            add(String.valueOf(Woche-1));
+        }});
+        zurückpfeil.setItemMeta(zurückpfeil_meta);
+
+        ItemStack buch=new ItemStack(Material.BOOK);
+        ItemMeta buch_meta= buch.getItemMeta();
+        buch_meta.setDisplayName(monday.format(dateFormat)+" - "+sunday.format(dateFormat));
+        buch_meta.setLore(new ArrayList<>(){{
+            add("");
+            add(ChatColor.YELLOW+"Linkscklick für "+today.format(dateFormat));
+        }});
+        buch.setItemMeta(buch_meta);
+
+        ItemStack zurück=new ItemStack(Material.BARRIER);
+        ItemMeta zurück_meta= zurück.getItemMeta();
+        zurück_meta.setDisplayName(ChatColor.RED+"§lZurück");
+        zurück.setItemMeta(zurück_meta);
+
+        //spieler
+        ItemStack head=new ItemStack(Material.PLAYER_HEAD,1,(short) 3);
+        SkullMeta skull=(SkullMeta) head.getItemMeta();
+        skull.setDisplayName(of.getName());
+        if(Bukkit.getPlayer(of.getName())==null){
+            String base64 = of.isWhitelisted() ? "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWU3NzAwMDk2YjVhMmE4NzM4NmQ2MjA1YjRkZGNjMTRmZDMzY2YyNjkzNjJmYTY4OTM0OTk0MzFjZTc3YmY5In19fQ=="
+                    : "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmViNTg4YjIxYTZmOThhZDFmZjRlMDg1YzU1MmRjYjA1MGVmYzljYWI0MjdmNDYwNDhmMThmYzgwMzQ3NWY3In19fQ==";
+
+            // Create a PlayerProfile with a random UUID and apply the base64 texture
+            PlayerProfile profile = getServer().createProfile(UUID.randomUUID(), "CustomHead");
+            profile.getProperties().add(new ProfileProperty("textures", base64));
+
+            // Set the profile to the skull meta
+            skull.setPlayerProfile(profile);
+        } else {
+            skull.setOwner(of.getName());
+        }
+        head.setItemMeta(skull);
+
+        //glass
+        for (int i = 0; i < 7; i++) {
+
+            ItemStack glass=new ItemStack(Material.GLASS);
+            ItemMeta glass_meta= glass.getItemMeta();
+            glass_meta.setDisplayName(monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[i])).format(dateFormat));
+            if(of.getPersistentDataContainer().has(new NamespacedKey(plugin
+                    ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[i])).format(dateFormat)+"auslog")
+                    ,PersistentDataType.STRING)) {
+                int finalI = i;
+                glass_meta.setLore(new ArrayList<>(){{
+                    add("Ausgelogt: "+of.getPersistentDataContainer().get(new NamespacedKey(plugin
+                                    ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"auslog")
+                                    ,PersistentDataType.STRING));
+                    add("");
+                    add(ChatColor.YELLOW+"Linksklick zum Teleportieren");
+        }});
+            }
+            glass.setItemMeta(glass_meta);
+
+            Loginventar.setItem(37+i,glass);
+        }
+
+        //onzeit
+        for (int i = 0; i < 7; i++) {
+
+            if(of.getPersistentDataContainer().has(new NamespacedKey(plugin
+                            ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[i])).format(dateFormat)+"playtime")
+                    ,PersistentDataType.INTEGER)){
+
+                ItemStack gelwolle = new ItemStack(Material.YELLOW_WOOL);
+                ItemMeta gelwolle_meta = gelwolle.getItemMeta();
+                gelwolle_meta.setDisplayName(ChatColor.YELLOW+monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[i])).format(dateFormat));
+                int finalI = i;
+                gelwolle_meta.setLore(new ArrayList<>(){{
+                    add(ChatColor.YELLOW+"Ausgelogt: "+of.getPersistentDataContainer().get(new NamespacedKey(plugin
+                                    ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"auslogtime")
+                            ,PersistentDataType.STRING));
+                    int Stunden = of.getPersistentDataContainer().get(new NamespacedKey(plugin
+                                    ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"playtime")
+                            ,PersistentDataType.INTEGER)/60/60;
+                    int minutes = (of.getPersistentDataContainer().get(new NamespacedKey(plugin
+                                    ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"playtime")
+                            ,PersistentDataType.INTEGER)/60)-(Stunden*60);
+                    int seconds = of.getPersistentDataContainer().get(new NamespacedKey(plugin
+                                    ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"playtime")
+                            ,PersistentDataType.INTEGER)-((Stunden*60*60)+(minutes*60));
+                    add(ChatColor.YELLOW+"Gesamtspielzeit: "+Stunden+":"+minutes+":"+seconds);
+                    add(ChatColor.YELLOW+"Login: "+of.getPersistentDataContainer().get(new NamespacedKey(plugin
+                                    ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"logintime")
+                            ,PersistentDataType.STRING));
+                }});
+
+                gelwolle.setItemMeta(gelwolle_meta);
+
+                for (int j = 0; (j*3) < (of.getPersistentDataContainer().get(new NamespacedKey(plugin
+                                ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"playtime")
+                        ,PersistentDataType.INTEGER)/60/60); j++) {
+
+                    if(28+i-(9*j)<0)break; //savty first
+                    Loginventar.setItem(28+i-(9*j),gelwolle);
+                }
+
+            } else {
+
+                boolean isafter = monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[i])).isAfter(new Date(of.getFirstPlayed()).toInstant()
+                        .atZone(ZoneId.of("Europe/Berlin")) // Specify German time zone
+                        .toLocalDate());
+                LocalDate timedate =monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[i]));
+                ItemStack wegwolle = new ItemStack(isafter ? timedate.isAfter(LocalDate.now()) ? Material.WHITE_WOOL : Material.RED_WOOL : Material.GRAY_WOOL);
+                ItemMeta wegwolle_meta = wegwolle.getItemMeta();
+                wegwolle_meta.setDisplayName(isafter ? timedate.isAfter(LocalDate.now()) ? String.valueOf(monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[i])))
+                        : ChatColor.RED+ String.valueOf(monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[i])))
+                        : ChatColor.GRAY+String.valueOf(monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[i]))) );
+                wegwolle_meta.setLore(new ArrayList<>(){{
+                    add(isafter ? timedate.isAfter(LocalDate.now()) ? ChatColor.WHITE+"Zukunft" : ChatColor.RED+"Spieler Offline" : ChatColor.GRAY+"Noch nicht auf dem Server");
+                }});
+                wegwolle.setItemMeta(wegwolle_meta);
+                Loginventar.setItem(28+i,wegwolle);
+            }
+        }
+
+        Loginventar.setItem(53,head);
+        Loginventar.setItem(51,vorpfeil);
+        Loginventar.setItem(49,buch);
+        Loginventar.setItem(47,zurückpfeil);
+        Loginventar.setItem(45,zurück);
+
+        p.openInventory(Loginventar);
     }
 }
