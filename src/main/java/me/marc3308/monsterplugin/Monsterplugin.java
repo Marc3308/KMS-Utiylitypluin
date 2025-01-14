@@ -13,9 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.logging.Level;
 
 public final class Monsterplugin extends JavaPlugin implements Listener {
 
@@ -71,7 +69,6 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
                             World world = Bukkit.getWorld("world");
                             world.setTime(newMinecraftTime % 24000L);
                         }
-
                     }
         },0,2);
 
@@ -113,7 +110,6 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
             Bukkit.getConsoleSender().sendMessage("Startet Generating chunk at: "+x+"x "+z+"z");
         }
 
-
         Bukkit.getPluginManager().registerEvents(new joinleavetracker(),this);
         Bukkit.getPluginManager().registerEvents(new mobdrops(),this);
         Bukkit.getPluginManager().registerEvents(new spiderspawn(),this);
@@ -130,7 +126,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         getCommand("loadit").setExecutor(new loadit());
         getCommand("spinfo").setExecutor(new info());
         getCommand("givetime").setExecutor(new timecom());
-        getCommand("worldtimeset").setExecutor(new settime());;
+        getCommand("worldtimeset").setExecutor(new settime());
         getCommand("spielerinfo").setExecutor(new playerlog());
         //getCommand("delwol").setExecutor(new delet());
 
@@ -196,7 +192,6 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         } catch (IOException i) {
             i.printStackTrace();
         }
-
     }
 
     public static Monsterplugin getPlugin() {

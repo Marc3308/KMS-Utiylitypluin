@@ -1,6 +1,7 @@
 name: Monsterplugin
 version: '1.21.1'
 main: me.marc3308.monsterplugin.Monsterplugin
+depend: [zerotrust]
 api-version: 1.19
 
 commands:
