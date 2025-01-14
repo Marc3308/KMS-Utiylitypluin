@@ -45,6 +45,9 @@ public class guicontroller implements Listener {
                 case PLAYER_HEAD:
                     openplayerinv(p, Bukkit.getOfflinePlayer(e.getCurrentItem().getItemMeta().getDisplayName()),0);
                     break;
+                case COMMAND_BLOCK:
+                    openserverinv(p,0);
+                    break;
             }
 
 
@@ -91,6 +94,22 @@ public class guicontroller implements Listener {
                     String[] loc=e.getCurrentItem().getItemMeta().getLore().getFirst().split(":");
                     p.teleport(new Location(p.getWorld(),Integer.valueOf(loc[2].split(" ")[0]),Integer.valueOf(loc[3].split(" ")[0]),Integer.valueOf(loc[4].split(" ")[0])));
                     p.closeInventory();
+                    break;
+            }
+        }
+
+        if(e.getView().getTitle().equalsIgnoreCase("§lServer Tracker")){
+            e.setCancelled(true);
+            if(e.getCurrentItem()==null)return;
+            switch (e.getCurrentItem().getType()){
+                case ARROW: //zurück for
+                    openserverinv(p,Integer.valueOf(e.getCurrentItem().getLore().getFirst()));
+                    break;
+                case BOOK: //anfang
+                    openserverinv(p,0);
+                    break;
+                case BARRIER: //info inv
+                    openinv(p,null,1,"LastOfLog");
                     break;
             }
         }

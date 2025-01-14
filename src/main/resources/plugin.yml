@@ -3,11 +3,14 @@ version: '${project.version}'
 main: me.marc3308.monsterplugin.Monsterplugin
 depend: [zerotrust]
 api-version: 1.19
+permissions:
+  technikdetails:
+    description: allows to use technikdetails
 
 commands:
   spinfo:
     description: info about spawn
-    permission: op
+    permission: technikdetails
   delwol:
     description: delets the world
     permission: op
@@ -16,10 +19,10 @@ commands:
     permission: op
   givetime:
     description: dont use
-    permission: op
+    permission: technikdetails
   worldtimeset:
     description: sets the world time
-    permission: op
+    permission: technikdetails
   spielerinfo:
     description: get the info
-    permission: siedlungsmod
+    permission: technikdetails

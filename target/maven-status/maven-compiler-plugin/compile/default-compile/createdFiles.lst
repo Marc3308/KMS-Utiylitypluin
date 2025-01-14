@@ -6,13 +6,16 @@ me\marc3308\monsterplugin\commands\playerlog$4.class
 me\marc3308\monsterplugin\commands\playerlog$6.class
 me\marc3308\monsterplugin\eventlistener\joinleavetracker.class
 me\marc3308\monsterplugin\commands\playerlog$1.class
+me\marc3308\monsterplugin\commands\playerlog$12.class
 me\marc3308\monsterplugin\eventlistener\oregen.class
 me\marc3308\monsterplugin\eventlistener\oregen$1.class
 me\marc3308\monsterplugin\eventlistener\guicontroller.class
 me\marc3308\monsterplugin\commands\playerlog$3.class
 me\marc3308\monsterplugin\eventlistener\noenchants.class
 me\marc3308\monsterplugin\Monsterplugin$1.class
+me\marc3308\monsterplugin\commands\playerlog$8.class
 me\marc3308\monsterplugin\commands\info.class
+me\marc3308\monsterplugin\commands\playerlog$11.class
 me\marc3308\monsterplugin\commands\playerlog$5.class
 me\marc3308\monsterplugin\eventlistener\onspawn.class
 me\marc3308\monsterplugin\commands\playerlog.class
@@ -28,7 +31,10 @@ me\marc3308\monsterplugin\commands\loadit$1.class
 me\marc3308\monsterplugin\eventlistener\mobdrops.class
 me\marc3308\monsterplugin\eventlistener\regiondelete.class
 me\marc3308\monsterplugin\commands\playerlog$7.class
+me\marc3308\monsterplugin\commands\playerlog$13.class
 me\marc3308\monsterplugin\eventlistener\infentare.class
 me\marc3308\monsterplugin\Monsterplugin$2.class
+me\marc3308\monsterplugin\commands\playerlog$9.class
+me\marc3308\monsterplugin\commands\playerlog$10.class
 me\marc3308\monsterplugin\eventlistener\nogrow.class
 me\marc3308\monsterplugin\eventlistener\guicontroller$1.class
