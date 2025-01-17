@@ -331,6 +331,10 @@ public class playerlog implements CommandExecutor{
         ItemStack head=new ItemStack(Material.PLAYER_HEAD,1,(short) 3);
         SkullMeta skull=(SkullMeta) head.getItemMeta();
         skull.setDisplayName(of.getName());
+        skull.setLore(new ArrayList<>(){{
+            add("");
+            add(ChatColor.YELLOW+"Linksklick für mehr Informationen");
+        }});
         if(Bukkit.getPlayer(of.getName())==null){
             String base64 = of.isWhitelisted() ? "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWU3NzAwMDk2YjVhMmE4NzM4NmQ2MjA1YjRkZGNjMTRmZDMzY2YyNjkzNjJmYTY4OTM0OTk0MzFjZTc3YmY5In19fQ=="
                     : "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmViNTg4YjIxYTZmOThhZDFmZjRlMDg1YzU1MmRjYjA1MGVmYzljYWI0MjdmNDYwNDhmMThmYzgwMzQ3NWY3In19fQ==";

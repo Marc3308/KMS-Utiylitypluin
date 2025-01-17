@@ -95,6 +95,9 @@ public class guicontroller implements Listener {
                     p.teleport(new Location(p.getWorld(),Integer.valueOf(loc[2].split(" ")[0]),Integer.valueOf(loc[3].split(" ")[0]),Integer.valueOf(loc[4].split(" ")[0])));
                     p.closeInventory();
                     break;
+                case PLAYER_HEAD:
+                    Bukkit.getServer().dispatchCommand(p,"profil "+e.getCurrentItem().getItemMeta().getDisplayName());
+                    break;
             }
         }
 
