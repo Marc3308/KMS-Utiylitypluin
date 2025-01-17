@@ -102,7 +102,7 @@ public class playerlog implements CommandExecutor{
         server_meta.setDisplayName(ChatColor.YELLOW+"§lServer");
         server_meta.setLore(new ArrayList<>(){{
             add(ChatColor.MAGIC+"Server"+ChatColor.RESET+"§lInformationen"+ChatColor.MAGIC+"Server");
-            int finalGesamtspielzeit = alltheplayers.stream().mapToInt(p -> p.getStatistic(Statistic.PLAY_ONE_MINUTE)).sum()/20;
+            int finalGesamtspielzeit = alltheplayers.stream().mapToInt(p -> p.getStatistic(Statistic.PLAY_ONE_MINUTE)/20).sum();
             int Stunden = finalGesamtspielzeit/60/60;
             int minutes = (finalGesamtspielzeit/60)-(Stunden*60);
             int seconds = finalGesamtspielzeit-((Stunden*60*60)+(minutes*60));
@@ -286,7 +286,7 @@ public class playerlog implements CommandExecutor{
     public static void openplayerinv(Player p, OfflinePlayer of, int Woche){
 
         // Get the current date
-        LocalDate today = LocalDate.now().plusWeeks(Woche);
+        LocalDate today = LocalDate.now(ZoneId.of("Europe/Berlin")).plusWeeks(Woche);
 
         // Find the Monday of the current week
         LocalDate monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
@@ -444,7 +444,7 @@ public class playerlog implements CommandExecutor{
         Stream.of(Bukkit.getOfflinePlayers()).forEach(alltheplayers::add);
 
         // Get the current date
-        LocalDate today = LocalDate.now().plusWeeks(Woche);
+        LocalDate today = LocalDate.now(ZoneId.of("Europe/Berlin")).plusWeeks(Woche);
 
         // Find the Monday of the current week
         LocalDate monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));

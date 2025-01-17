@@ -10,6 +10,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 
@@ -21,7 +22,7 @@ public class joinleavetracker implements Listener {
     public void onjoin(PlayerJoinEvent e){
 
         Player p = e.getPlayer();
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Europe/Berlin"));
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         DateTimeFormatter clockdate = DateTimeFormatter.ofPattern("HH:mm:ss");
         if(!p.getPersistentDataContainer().has(new NamespacedKey(plugin
@@ -45,7 +46,7 @@ public class joinleavetracker implements Listener {
     @EventHandler
     public void logout(PlayerQuitEvent e){
         Player p = e.getPlayer();
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Europe/Berlin"));
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         DateTimeFormatter clockdate = DateTimeFormatter.ofPattern("HH:mm:ss");
         p.getPersistentDataContainer().set(new NamespacedKey(plugin
