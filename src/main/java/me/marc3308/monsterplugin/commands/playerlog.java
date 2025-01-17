@@ -106,7 +106,7 @@ public class playerlog implements CommandExecutor{
             int Stunden = finalGesamtspielzeit/60/60;
             int minutes = (finalGesamtspielzeit/60)-(Stunden*60);
             int seconds = finalGesamtspielzeit-((Stunden*60*60)+(minutes*60));
-            add("Gesamtspielzeit: "+Stunden+":"+minutes+":"+seconds);
+            add("Gesamtspielzeit: "+Stunden+"h "+minutes+"m "+seconds+"s ");
             add("");
             add(ChatColor.YELLOW+"Linksklick für mehr Informationen");
         }});
@@ -398,7 +398,7 @@ public class playerlog implements CommandExecutor{
                     int Stunden = allthesec/60/60;
                     int minutes = (allthesec/60)-(Stunden*60);
                     int seconds = allthesec-((Stunden*60*60)+(minutes*60));
-                    add(ChatColor.YELLOW+"Gesamtspielzeit: "+Stunden+":"+minutes+":"+seconds);
+                    add(ChatColor.YELLOW+"Gesamtspielzeit: "+Stunden+"h "+minutes+"m "+seconds+"s ");
                     add(ChatColor.YELLOW+"Login: "+of.getPersistentDataContainer().get(new NamespacedKey(plugin
                                     ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"logintime")
                             ,PersistentDataType.STRING));
@@ -529,7 +529,7 @@ public class playerlog implements CommandExecutor{
                     int Stunden = finalGesamtspielzeit/60/60;
                     int minutes = (finalGesamtspielzeit/60)-(Stunden*60);
                     int seconds = finalGesamtspielzeit-((Stunden*60*60)+(minutes*60));
-                add(ChatColor.YELLOW+"Gesamtspielzeit: "+Stunden+":"+minutes+":"+seconds);
+                add(ChatColor.YELLOW+"Gesamtspielzeit: "+Stunden+"h "+minutes+"m "+seconds+"s ");
             }});
 
             gelwolle.setItemMeta(gelwolle_meta);
