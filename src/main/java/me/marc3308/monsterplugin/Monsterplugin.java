@@ -39,7 +39,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
     public static ArrayList<Cosmetikobjekt> cosmetikslist=new ArrayList<>();
     public static int Bignumb=0;
 
-    public static LocalDateTime cycleStartTime =LocalDateTime.now();
+    public static LocalDateTime cycleStartTime =LocalDateTime.now(ZoneId.of("Europe/Berlin"));
     public static Monsterplugin plugin;
 
     @Override

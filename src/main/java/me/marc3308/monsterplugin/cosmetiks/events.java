@@ -12,7 +12,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
@@ -29,6 +31,10 @@ public class events implements Listener {
     @EventHandler
     public void oninv(InventoryClickEvent e){
         Player p = (Player) e.getWhoClicked();
+
+        //update inv
+        if(e.getSlotType().equals(InventoryType.SlotType.ARMOR))Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> sendFakeArmor(p,p), 1L);
+
 
         //cosmikinf
         if(e.getView().getTitle().equalsIgnoreCase("§lCosmetik Menu")) {
@@ -92,6 +98,11 @@ public class events implements Listener {
 
     }
 
+    @EventHandler
+    public void plresp(PlayerRespawnEvent e){
+        Player p = e.getPlayer();
+        sendpack(p);
+    }
 
     @EventHandler
     public void onchanche(PlayerArmorChangeEvent e){
@@ -111,6 +122,9 @@ public class events implements Listener {
     }
 
     private void sendFakeArmor(Player viewer, Player target) {
+        //if u mod or so
+        if(viewer.equals(target) && !target.getGameMode().equals(GameMode.SURVIVAL))return;
+
         try {
             PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
 

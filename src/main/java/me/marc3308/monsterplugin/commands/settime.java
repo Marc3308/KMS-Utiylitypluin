@@ -25,7 +25,7 @@ public class settime implements CommandExecutor {
             newtime.setYear(cycleStartTime.getYear()-1900);
             newtime.setMonth(cycleStartTime.getMonthValue()-1);
             newtime.setDate(cycleStartTime.getDayOfMonth());
-            newtime.setHours(Integer.valueOf(args[0])-1);
+            newtime.setHours(Integer.valueOf(args[0]));
             newtime.setMinutes(Integer.valueOf(args[1]));
             newtime.setSeconds(cycleStartTime.getSecond());
 
