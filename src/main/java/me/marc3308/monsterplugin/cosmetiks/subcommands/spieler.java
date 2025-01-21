@@ -40,7 +40,6 @@ public class spieler extends subcommand {
                 for (Player of : Bukkit.getOnlinePlayers()){
                     if(of.getName().equalsIgnoreCase(args[1])){
                         if(args[2].equals("add")){
-                            of.getPersistentDataContainer().set(new NamespacedKey(Monsterplugin.getPlugin(), c.getBedingung()), PersistentDataType.BOOLEAN, true);
                             p.sendMessage(ChatColor.DARK_GREEN+of.getName()+" hat nun die Cosmetik: "+ChatColor.GREEN+c.getName());
                             of.sendMessage(ChatColor.DARK_GREEN+"Du hast nun die Cosmetik: "+ChatColor.GREEN+c.getName());
                         } else {

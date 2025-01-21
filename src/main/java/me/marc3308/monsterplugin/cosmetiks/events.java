@@ -182,7 +182,9 @@ public class events implements Listener {
         ArrayList<Cosmetikobjekt> cosmiklist = new ArrayList<>();
         for (Cosmetikobjekt c : cosmetikslist){
             if(c.getKörperteil().equalsIgnoreCase(sorter)){
-                if(c.getBedingung()==null || p.getPersistentDataContainer().has(new NamespacedKey(Monsterplugin.getPlugin(), c.getBedingung()), PersistentDataType.BOOLEAN)){
+                if(c.getBedingung()==null
+                        || p.getPersistentDataContainer().has(new NamespacedKey(Monsterplugin.getPlugin(), c.getBedingung()), PersistentDataType.BOOLEAN)
+                        || c.getBedingung().equals(p.getPersistentDataContainer().get(new NamespacedKey("rassensystem","rasse"), PersistentDataType.STRING))){
                     cosmiklist.add(c);
                 }
             }
