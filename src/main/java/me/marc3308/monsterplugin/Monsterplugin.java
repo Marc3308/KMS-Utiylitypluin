@@ -1,12 +1,23 @@
 package me.marc3308.monsterplugin;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.Pair;
 import me.marc3308.monsterplugin.commands.*;
+import me.marc3308.monsterplugin.cosmetiks.Commandmanager;
+import me.marc3308.monsterplugin.cosmetiks.Cosmetikobjekt;
+import me.marc3308.monsterplugin.cosmetiks.comamndmenu;
+import me.marc3308.monsterplugin.cosmetiks.events;
 import me.marc3308.monsterplugin.eventlistener.*;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -15,6 +26,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.List;
 
 public final class Monsterplugin extends JavaPlugin implements Listener {
 
@@ -24,6 +36,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
     public static File file2 = new File("plugins/KMS Plugins/DingeDiePassierenMussen","NichtFertig.yml");
     public static FileConfiguration safething3= YamlConfiguration.loadConfiguration(file2);
     public static ArrayList<Location> chunklust=new ArrayList<>();
+    public static ArrayList<Cosmetikobjekt> cosmetikslist=new ArrayList<>();
     public static int Bignumb=0;
 
     public static LocalDateTime cycleStartTime =LocalDateTime.now();
@@ -84,7 +97,6 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
                 }
                 File eisfile = new File("plugins/KMS Plugins/DingeDiePassierenMussen","Eistellungen.yml");
                 eiss=YamlConfiguration.loadConfiguration(eisfile);
-
             }
         },0,20*10);
 
@@ -111,6 +123,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
             Bukkit.getConsoleSender().sendMessage("Startet Generating chunk at: "+x+"x "+z+"z");
         }
 
+        Bukkit.getPluginManager().registerEvents(new events(),this);
         Bukkit.getPluginManager().registerEvents(new joinleavetracker(),this);
         Bukkit.getPluginManager().registerEvents(new mobdrops(),this);
         Bukkit.getPluginManager().registerEvents(new spiderspawn(),this);
@@ -129,7 +142,13 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         getCommand("givetime").setExecutor(new timecom());
         getCommand("worldtimeset").setExecutor(new settime());
         getCommand("spielerinfo").setExecutor(new playerlog());
+        getCommand("cosmetikmenu").setExecutor(new comamndmenu());
+        getCommand("cosmetiks").setExecutor(new Commandmanager());
         //getCommand("delwol").setExecutor(new delet());
+
+
+        //load cosmetiks
+        Cosmetikobjekt.loadlist();
 
         if(eiss.get("orgen")==null){
 
@@ -187,7 +206,6 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
 
 
         }
-
         try {
             eiss.save(file);
         } catch (IOException i) {
@@ -220,6 +238,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         } catch (IOException i) {
             i.printStackTrace();
         }
+        Cosmetikobjekt.savecosmis();
         Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED+"Shit is Saved");
     }
 

@@ -2,7 +2,8 @@ name: Monsterplugin
 version: '1.21.1'
 main: me.marc3308.monsterplugin.Monsterplugin
 depend: [zerotrust]
-api-version: 1.19
+api-version: 1.21
+
 permissions:
   technikdetails:
     description: allows to use technikdetails
@@ -25,4 +26,9 @@ commands:
     permission: technikdetails
   spielerinfo:
     description: get the info
+    permission: technikdetails
+  cosmetikmenu:
+    description: gives you a cosmetmenu
+  cosmetiks:
+    description: gives you a cosmetik
     permission: technikdetails
