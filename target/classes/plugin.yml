@@ -27,8 +27,8 @@ commands:
   spielerinfo:
     description: get the info
     permission: technikdetails
-  cosmetikmenu:
+  cosmetic:
     description: gives you a cosmetmenu
-  cosmetiks:
+  cosmetics:
     description: gives you a cosmetik
     permission: technikdetails

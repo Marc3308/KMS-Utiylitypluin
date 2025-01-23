@@ -8,6 +8,7 @@ import com.comphenix.protocol.wrappers.Pair;
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
 import me.marc3308.monsterplugin.Monsterplugin;
 import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,6 +17,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -37,7 +39,7 @@ public class events implements Listener {
 
 
         //cosmikinf
-        if(e.getView().getTitle().equalsIgnoreCase("§lCosmetik Menu")) {
+        if(e.getView().getTitle().equalsIgnoreCase("§lCosmetic-Menü")) {
             e.setCancelled(true);
             if (e.getCurrentItem() == null) return;
             switch (e.getCurrentItem().getItemMeta().getDisplayName()){
@@ -45,9 +47,11 @@ public class events implements Listener {
                     opencosmikmenu2(p,"Kopf",1);
                     break;
             }
+            return;
         }
 
-        if(e.getView().getTitle().equalsIgnoreCase("§lCosmetik Menu > "+"Kopf")) {
+        //todo ersetzen dass alle anwehlen kannst
+        if(e.getView().getTitle().equalsIgnoreCase("§lCosmetic-Menü > "+"Kopf")) {
             e.setCancelled(true);
             if (e.getCurrentItem() == null) return;
             String sorter = " ";
@@ -76,8 +80,7 @@ public class events implements Listener {
                     opencosmikmenu2(p,e.getView().getTitle().split("> ")[1],Integer.parseInt(e.getView().getItem(51).getItemMeta().getDisplayName())+1);
                     break;
                 case BARRIER:
-                    Bukkit.dispatchCommand(p,"cosmetikmenu");
-                    p.getPersistentDataContainer().remove(new NamespacedKey(Monsterplugin.getPlugin(), sorter));
+                    Bukkit.dispatchCommand(p,"cosmetic");
                     sendpack(p);
                     break;
                 case BOOK:
@@ -86,8 +89,13 @@ public class events implements Listener {
                 default:
                     for (Cosmetikobjekt c : cosmetikslist){
                         if(c.getName().equalsIgnoreCase(e.getCurrentItem().getItemMeta().getDisplayName())){
-                            p.getPersistentDataContainer().set(new NamespacedKey(Monsterplugin.getPlugin(), sorter), PersistentDataType.INTEGER, c.getCustommodeldata());
-                            Bukkit.dispatchCommand(p,"cosmetikmenu");
+                            if(p.getPersistentDataContainer().has(new NamespacedKey(Monsterplugin.getPlugin(), sorter))
+                                    && p.getPersistentDataContainer().get(new NamespacedKey(Monsterplugin.getPlugin(), sorter), PersistentDataType.INTEGER).equals(c.getCustommodeldata())){
+                                p.getPersistentDataContainer().remove(new NamespacedKey(Monsterplugin.getPlugin(), sorter));
+                            } else{
+                                p.getPersistentDataContainer().set(new NamespacedKey(Monsterplugin.getPlugin(), sorter), PersistentDataType.INTEGER, c.getCustommodeldata());
+                            }
+                            Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> Bukkit.dispatchCommand(p,"cosmetic"), 1L);
                             sendpack(p);
                             break;
                         }
@@ -169,7 +177,7 @@ public class events implements Listener {
 
     private void opencosmikmenu2(Player p,String sorter, int Seite){
 
-        Inventory Loginventar = Bukkit.createInventory(p,54,"§lCosmetik Menu > "+sorter);
+        Inventory Loginventar = Bukkit.createInventory(p,54,"§lCosmetic-Menü > "+sorter);
 
         //creat the allways components
         ItemStack vorpfeil=new ItemStack(Material.ARROW);
@@ -185,7 +193,7 @@ public class events implements Listener {
         ItemStack bestenbuch=new ItemStack(Material.BARRIER);
         ItemMeta bestenbuch_meta= bestenbuch.getItemMeta();
         bestenbuch_meta.setRarity(ItemRarity.EPIC);
-        bestenbuch_meta.setDisplayName(ChatColor.GRAY+"§l Zurück");
+        bestenbuch_meta.setDisplayName(ChatColor.GRAY+"§lZurück");
         bestenbuch.setItemMeta(bestenbuch_meta);
 
         Loginventar.setItem(51,vorpfeil);
@@ -203,12 +211,46 @@ public class events implements Listener {
                 }
             }
         }
+
+        switch (sorter){
+            case "Kopf":
+                sorter="comichead";
+                break;
+            case "Körper":
+                sorter="comicchest";
+                break;
+            case "Beine":
+                sorter="comiclegs";
+                break;
+            case "Füße":
+                sorter="comicfeet";
+                break;
+            case "Mainhand":
+                sorter="commicmainhand";
+                break;
+            case "Offhand":
+                sorter="comicoffhand";
+                break;
+        }
+
         for (Cosmetikobjekt c : cosmiklist){
             if(cosmiklist.indexOf(c)>=44*(Seite-1) && cosmiklist.indexOf(c)<=44*Seite){
+
+                boolean aktivecosmetic = p.getPersistentDataContainer().has(new NamespacedKey(Monsterplugin.getPlugin(), sorter), PersistentDataType.INTEGER)
+                        && p.getPersistentDataContainer().get(new NamespacedKey(Monsterplugin.getPlugin(), sorter), PersistentDataType.INTEGER).equals(c.getCustommodeldata());
+
                 ItemStack item = new ItemStack(Material.valueOf(c.getMaterial()));
                 ItemMeta meta = item.getItemMeta();
                 meta.setDisplayName(c.getName());
-                meta.setLore(c.getBeschreibung());
+                meta.setLore(new ArrayList<>(){{
+                    c.getBeschreibung().forEach(this::add);
+                    add("");
+                    add(aktivecosmetic ? ChatColor.YELLOW+"Linksklick zum Absetzen" : ChatColor.YELLOW+"Linksklick zum Wechseln");
+                }});
+                if(aktivecosmetic){
+                    meta.addEnchant(Enchantment.MENDING,1,true);
+                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                }
                 meta.setCustomModelData(c.getCustommodeldata());
                 item.setItemMeta(meta);
                 Loginventar.setItem(Loginventar.firstEmpty(),item);

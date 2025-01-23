@@ -25,7 +25,7 @@ public class spieler extends subcommand {
 
     @Override
     public String getSyntax() {
-        return "/cosmetiks spieler <player> <status> <cosmetik>";
+        return "/cosmetics spieler <player> <status> <cosmetik>";
     }
 
     @Override
@@ -40,12 +40,13 @@ public class spieler extends subcommand {
                 for (Player of : Bukkit.getOnlinePlayers()){
                     if(of.getName().equalsIgnoreCase(args[1])){
                         if(args[2].equals("add")){
-                            p.sendMessage(ChatColor.DARK_GREEN+of.getName()+" hat nun die Cosmetik: "+ChatColor.GREEN+c.getName());
-                            of.sendMessage(ChatColor.DARK_GREEN+"Du hast nun die Cosmetik: "+ChatColor.GREEN+c.getName());
+                            of.getPersistentDataContainer().set(new NamespacedKey(Monsterplugin.getPlugin(), c.getBedingung()),PersistentDataType.BOOLEAN,true);
+                            p.sendMessage(ChatColor.DARK_GREEN+of.getName()+" hat nun die Cosmetic: "+ChatColor.GREEN+c.getName());
+                            of.sendMessage(ChatColor.DARK_GREEN+"Du hast nun die Cosmetic: "+ChatColor.GREEN+c.getName());
                         } else {
                             of.getPersistentDataContainer().remove(new NamespacedKey(Monsterplugin.getPlugin(), c.getBedingung()));
-                            p.sendMessage(ChatColor.DARK_GREEN+of.getName()+" hat nun nicht mehr die Cosmetik: "+ChatColor.GREEN+c.getName());
-                            of.sendMessage(ChatColor.DARK_GREEN+"Du hast nun nicht mehr die Cosmetik: "+ChatColor.GREEN+c.getName());
+                            p.sendMessage(ChatColor.DARK_GREEN+of.getName()+" hat nun nicht mehr die Cosmetic: "+ChatColor.GREEN+c.getName());
+                            of.sendMessage(ChatColor.DARK_GREEN+"Du hast nun nicht mehr die Cosmetic: "+ChatColor.GREEN+c.getName());
                         }
                         return;
                     }

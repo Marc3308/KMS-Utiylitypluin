@@ -19,7 +19,7 @@ public class info extends subcommand {
 
     @Override
     public String getSyntax() {
-        return "/cosmetik info <cosmetik>";
+        return "/cosmetics info <cosmetik>";
     }
 
     @Override

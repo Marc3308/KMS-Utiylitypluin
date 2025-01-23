@@ -20,7 +20,7 @@ public class remove extends subcommand {
 
     @Override
     public String getSyntax() {
-        return "/cosmetiks remove <Name>";
+        return "/cosmetics remove <Name>";
     }
 
     @Override

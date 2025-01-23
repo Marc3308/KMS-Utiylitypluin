@@ -17,20 +17,20 @@ public class help extends subcommand {
 
     @Override
     public String getSyntax() {
-        return "/cosemtiks help";
+        return "/cosmetics help";
     }
 
     @Override
     public void perform(Player p, String[] args) {
 
         p.sendMessage(ChatColor.DARK_GREEN+"----------------------------------------------------");
-        p.sendMessage("/cosemtiks add <Name> <Nummer> <Block> <Körperteil>");
-        p.sendMessage("/cosemtiks remove <Name>");
-        p.sendMessage("/cosemtiks edit <Name> <art> <neuerwert>");
-        p.sendMessage("/cosemtiks info <Name>");
-        p.sendMessage("/cosemtiks give <Name>");
-        p.sendMessage("/cosemtiks unlock <Name> <Spieler>");
-        p.sendMessage("/cosemtiks load");
+        p.sendMessage("/cosmetics add <Name> <Nummer> <Block> <Körperteil>");
+        p.sendMessage("/cosmetics remove <Name>");
+        p.sendMessage("/cosmetics edit <Name> <art> <neuerwert>");
+        p.sendMessage("/cosmetics info <Name>");
+        p.sendMessage("/cosmetics give <Name>");
+        p.sendMessage("/cosmetics unlock <Name> <Spieler>");
+        p.sendMessage("/cosmetics load");
         p.sendMessage(ChatColor.DARK_GREEN+"----------------------------------------------------");
 
     }

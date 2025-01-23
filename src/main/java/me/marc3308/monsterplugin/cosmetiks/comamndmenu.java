@@ -2,6 +2,7 @@ package me.marc3308.monsterplugin.cosmetiks;
 
 import me.marc3308.monsterplugin.Monsterplugin;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
@@ -22,7 +23,7 @@ public class comamndmenu implements CommandExecutor {
         if(!(sender instanceof Player))return false;
         Player p= (Player) sender;
 
-        Inventory Cosmetikmenu = Bukkit.createInventory(p,54,"§lCosmetik Menu");
+        Inventory Cosmetikmenu = Bukkit.createInventory(p,54,"§lCosmetic-Menü");
 
         ItemStack glass= new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
         ItemMeta glassmeta = glass.getItemMeta();
@@ -42,7 +43,10 @@ public class comamndmenu implements CommandExecutor {
         ItemMeta headmeta = head.getItemMeta();
         headmeta.setDisplayName("Kopf");
         headmeta.setLore(new ArrayList<>(){{
-            add("Deine Kopf Cosmetik");
+            add("Hier findest du deine");
+            add("Cosmetics für den Kopf");
+            add("");
+            add(ChatColor.YELLOW+"Linksklick zum Wechseln");
         }});
         if(kopf)headmeta.setCustomModelData(p.getPersistentDataContainer().get(new NamespacedKey(Monsterplugin.getPlugin(), "comichead"), PersistentDataType.INTEGER));
         head.setItemMeta(headmeta);

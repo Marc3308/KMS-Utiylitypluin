@@ -22,7 +22,7 @@ public class edit extends subcommand {
 
     @Override
     public String getSyntax() {
-        return "/cosmetiks edit <Name> <art> <neuerwert>";
+        return "/cosmetics edit <Name> <art> <neuerwert>";
     }
 
     @Override

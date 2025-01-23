@@ -24,7 +24,7 @@ public class give extends subcommand {
 
     @Override
     public String getSyntax() {
-        return "/cosmetiks give <cosmetik>";
+        return "/cosmetics give <cosmetik>";
     }
 
     @Override

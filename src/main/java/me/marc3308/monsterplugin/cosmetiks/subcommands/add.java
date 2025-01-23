@@ -22,7 +22,7 @@ public class add extends subcommand {
 
     @Override
     public String getSyntax() {
-        return "/cosemtiks add <Name> <Nummer> <Block> <Körperteil>";
+        return "/cosmetics add <Name> <Nummer> <Block> <Körperteil>";
     }
 
     @Override

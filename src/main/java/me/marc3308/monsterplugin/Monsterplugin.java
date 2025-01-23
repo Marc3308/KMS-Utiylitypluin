@@ -142,8 +142,8 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         getCommand("givetime").setExecutor(new timecom());
         getCommand("worldtimeset").setExecutor(new settime());
         getCommand("spielerinfo").setExecutor(new playerlog());
-        getCommand("cosmetikmenu").setExecutor(new comamndmenu());
-        getCommand("cosmetiks").setExecutor(new Commandmanager());
+        getCommand("cosmetic").setExecutor(new comamndmenu());
+        getCommand("cosmetics").setExecutor(new Commandmanager());
         //getCommand("delwol").setExecutor(new delet());
 
 

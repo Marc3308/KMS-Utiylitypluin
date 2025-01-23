@@ -44,6 +44,7 @@ me\marc3308\monsterplugin\commands\playerlog$3.class
 me\marc3308\monsterplugin\cosmetiks\subcommand.class
 me\marc3308\monsterplugin\cosmetiks\subcommands\give.class
 me\marc3308\monsterplugin\Monsterplugin$1.class
+me\marc3308\monsterplugin\cosmetiks\events$2.class
 me\marc3308\monsterplugin\eventlistener\onspawn$1.class
 me\marc3308\monsterplugin\eventlistener\oregen$3.class
 me\marc3308\monsterplugin\Monsterplugin.class
