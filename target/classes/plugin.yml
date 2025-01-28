@@ -9,6 +9,9 @@ permissions:
     description: allows to use technikdetails
 
 commands:
+  chess:
+    description: create a chess game
+    permission: technikdetails
   spinfo:
     description: info about spawn
     permission: technikdetails

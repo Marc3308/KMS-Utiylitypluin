@@ -32,7 +32,6 @@ public class playerlog implements CommandExecutor{
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if(!(sender instanceof Player))return false;
         Player p= (Player) sender;
-        if(!p.isOp())return false;
         openinv(p,args.length>=1 ? args[0] : null,1,"LastOfLog");
         return false;
     }
@@ -107,6 +106,7 @@ public class playerlog implements CommandExecutor{
             int minutes = (finalGesamtspielzeit/60)-(Stunden*60);
             int seconds = finalGesamtspielzeit-((Stunden*60*60)+(minutes*60));
             add("Gesamtspielzeit: "+Stunden+"h "+minutes+"m "+seconds+"s ");
+            add("Spieler: "+alltheplayers.size());
             add("");
             add(ChatColor.YELLOW+"Linksklick für mehr Informationen");
         }});

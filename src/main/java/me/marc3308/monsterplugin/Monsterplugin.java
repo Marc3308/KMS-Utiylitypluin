@@ -1,11 +1,8 @@
 package me.marc3308.monsterplugin;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.Pair;
+import me.marc3308.monsterplugin.chess.chesscommand;
+import me.marc3308.monsterplugin.chess.chessevents;
+import me.marc3308.monsterplugin.chess.utilitys;
 import me.marc3308.monsterplugin.commands.*;
 import me.marc3308.monsterplugin.cosmetiks.Commandmanager;
 import me.marc3308.monsterplugin.cosmetiks.Cosmetikobjekt;
@@ -17,7 +14,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -26,7 +22,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 public final class Monsterplugin extends JavaPlugin implements Listener {
 
@@ -123,6 +119,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
             Bukkit.getConsoleSender().sendMessage("Startet Generating chunk at: "+x+"x "+z+"z");
         }
 
+        Bukkit.getPluginManager().registerEvents(new chessevents(),this);
         Bukkit.getPluginManager().registerEvents(new events(),this);
         Bukkit.getPluginManager().registerEvents(new joinleavetracker(),this);
         Bukkit.getPluginManager().registerEvents(new mobdrops(),this);
@@ -144,11 +141,13 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         getCommand("spielerinfo").setExecutor(new playerlog());
         getCommand("cosmetic").setExecutor(new comamndmenu());
         getCommand("cosmetics").setExecutor(new Commandmanager());
+        getCommand("chess").setExecutor(new chesscommand());
         //getCommand("delwol").setExecutor(new delet());
 
 
         //load cosmetiks
         Cosmetikobjekt.loadlist();
+        utilitys.loadbords();
 
         if(eiss.get("orgen")==null){
 
@@ -239,7 +238,10 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
             i.printStackTrace();
         }
         Cosmetikobjekt.savecosmis();
+        utilitys.savebords();
         Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED+"Shit is Saved");
+
+        utilitys.schachliste.stream().filter(s -> s.hasGame() && s.getGame().isGamehasstarted()).forEach(s -> s.setGame(null));
     }
 
 }
