@@ -155,16 +155,16 @@ class Laufer extends Figuren{
     }
 }
 
-class Koenigin extends Figuren{
+class Dame extends Figuren{
 
     private boolean white;
     private ArmorStand ar;
-    public Koenigin(Location loc,Material mat,int customModelData, boolean white){
+    public Dame(Location loc, Material mat, int customModelData, boolean white){
         this.white=white;
 
         ar = loc.getWorld().spawn(loc.clone().add(0.5,-3,0.5),ArmorStand.class);
         ar.setInvulnerable(true);
-        ar.setCustomName((white ? ChatColor.WHITE : ChatColor.DARK_GRAY)+"Königin");
+        ar.setCustomName((white ? ChatColor.WHITE : ChatColor.DARK_GRAY)+"Dame");
         ar.setCustomNameVisible(false);
         ar.setGravity(false);
         ar.setVisible(false);

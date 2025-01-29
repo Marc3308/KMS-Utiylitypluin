@@ -1,5 +1,6 @@
 package me.marc3308.monsterplugin.chess.objekts;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -12,17 +13,27 @@ public class Chessbord {
     private String name;
     private Location feltstart;
     private Location feltend;
+    private boolean help;
 
-    public Chessbord(Location loc, String name){
+    public Chessbord(Location loc, String name, boolean help) {
+        this.help=help;
         this.name = name;
         this.feltstart =loc.getBlock().getLocation();
         this.feltend =loc.getBlock().getLocation().add(8,0,8);
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                loc.getWorld().spawnParticle(END_ROD,loc.clone().add(i,1,j),5,0,0,0,0.01);
+                if(!Bukkit.getOnlinePlayers().isEmpty())loc.getWorld().spawnParticle(END_ROD,loc.clone().add(i,1,j),5,0,0,0,0.01);
             }
         }
+    }
+
+    public void setHelp(boolean help) {
+        this.help = help;
+    }
+
+    public boolean isHelp() {
+        return help;
     }
 
     public void setGame(Player p) {
@@ -33,6 +44,7 @@ public class Chessbord {
                     if(game.getBord()[i][j]!=null)game.getBord()[i][j].getArmorStand().remove();
                 }
             }
+            game.getPromolist().forEach(s -> s.getArmorStand().remove());
         }
         this.game = (p==null ? null : new chessgame(this,p));
     }

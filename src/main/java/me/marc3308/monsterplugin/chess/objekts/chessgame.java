@@ -1,7 +1,6 @@
 package me.marc3308.monsterplugin.chess.objekts;
 
 import me.marc3308.monsterplugin.Monsterplugin;
-import me.marc3308.monsterplugin.chess.utilitys;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
@@ -11,17 +10,35 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
+
+import static me.marc3308.monsterplugin.chess.utilitys.movefigure;
+
 public class chessgame {
     private Chessbord chessbord;
     private Player spieler1;
     private Player spieler2;
     private boolean gamehasstarted;
     private Figuren[][] bord = new Figuren[8][8];
+    private String lastturn;
     private String turn;
     private boolean white_kingside;
     private boolean black_kingside;
     private boolean black_queenside;
     private boolean white_queenside;
+    private ArrayList<Figuren> promolist = new ArrayList<>();
+
+    public void setLastturn(String lastturn) {
+        this.lastturn = lastturn;
+    }
+
+    public ArrayList<Figuren> getPromolist() {
+        return promolist;
+    }
+
+    public String getLastturn() {
+        return lastturn;
+    }
 
     public boolean isBlack_kingside() {
         return black_kingside;
@@ -157,7 +174,7 @@ public class chessgame {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if(bord[i][j]==null)continue;
-                utilitys.movefigure(bord[i][j].getArmorStand(),bord[i][j].getArmorStand().getLocation().clone().add(0,-3,0));
+                movefigure(bord[i][j].getArmorStand(),bord[i][j].getArmorStand().getLocation().clone().add(0,-3,0));
                 int finalI = i;
                 int finalJ = j;
                 Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> bord[finalI][finalJ].getArmorStand().remove(),20*4);
@@ -166,7 +183,7 @@ public class chessgame {
                     Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->{
                         // Create the firework entity at the specified location
                         Firework firework = (Firework) chessbord.getFeltstart().getWorld().spawnEntity(
-                                 chessbord.getFeltstart().add(winner.equals("white") ? 0 : 7 - finalI,0,finalJ), EntityType.FIREWORK_ROCKET);
+                                 chessbord.getFeltstart().add((winner.equals("white") ? 0 : 7) - finalI,0,finalJ), EntityType.FIREWORK_ROCKET);
 
                         // Get the firework meta data
                         FireworkMeta fireworkMeta = firework.getFireworkMeta();
@@ -184,7 +201,7 @@ public class chessgame {
                         fireworkMeta.addEffect(effect);
 
                         // Set the power of the firework (how high it will fly)
-                        fireworkMeta.setPower(finalI);
+                        fireworkMeta.setPower(3);
 
                         // Apply the meta to the firework
                         firework.setFireworkMeta(fireworkMeta);
@@ -207,7 +224,7 @@ public class chessgame {
                              j==0 || j==7 ? new Turm(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+2,true)
                             : j==1 || j==6 ? new Springer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+3,true)
                             : j==2 || j==5 ? new Laufer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+4,true)
-                            : j==3 ? new Koenigin(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+5,true)
+                            : j==3 ? new Dame(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+5,true)
                             : new Koenig(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+6,true); //white
                 }
             }
@@ -223,9 +240,41 @@ public class chessgame {
                             j==0 || j==7 ? new Turm(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+12,false)
                                     : j==1 || j==6 ? new Springer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+13,false)
                                     : j==2 || j==5 ? new Laufer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+14,false)
-                                    : j==3 ? new Koenigin(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+15,false)
+                                    : j==3 ? new Dame(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+15,false)
                                     : new Koenig(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+16,false); //black
                 }
+            }
+        }
+    }
+
+    public void promote(int x ,int z){
+        promolist.get(z-2).getArmorStand().teleport(bord[Integer.valueOf(lastturn.split(":")[0])][Integer.valueOf(lastturn.split(":")[1])].getArmorStand().getLocation());
+        bord[Integer.valueOf(lastturn.split(":")[0])][Integer.valueOf(lastturn.split(":")[1])].getArmorStand().remove();
+        bord[Integer.valueOf(lastturn.split(":")[0])][Integer.valueOf(lastturn.split(":")[1])] = promolist.get(z-2);
+        promolist.remove(z-2);
+        moveall(2);
+        promolist.forEach(f -> f.getArmorStand().remove());
+        promolist.clear();
+    }
+
+    public void createpromolist(Player p){
+        int modeldata=spieler1.getPersistentDataContainer().has(new NamespacedKey(Monsterplugin.getPlugin(),"chessskin"))
+                ? spieler1.getPersistentDataContainer().get(new NamespacedKey(Monsterplugin.getPlugin(),"chessskin"), PersistentDataType.INTEGER)
+                : 10000;
+        moveall(-2);
+        promolist.forEach(f -> f.getArmorStand().remove());
+        promolist.clear();
+        promolist.add(new Turm(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,2), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+2 : modeldata+12,getTurn().split(":")[1].equals("white")));
+        promolist.add(new Springer(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,3), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+3 : modeldata+13,getTurn().split(":")[1].equals("white")));
+        promolist.add(new Laufer(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,4), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+4 : modeldata+14,getTurn().split(":")[1].equals("white")));
+        promolist.add(new Dame(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,5), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+5 : modeldata+15,getTurn().split(":")[1].equals("white")));
+    }
+
+    public void moveall(double y){
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if(bord[i][j]==null)continue;
+                movefigure(bord[i][j].getArmorStand(),bord[i][j].getArmorStand().getLocation().clone().add(0,y,0));
             }
         }
     }

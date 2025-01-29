@@ -96,6 +96,9 @@ public class Cosmetikobjekt {
     public static void savecosmis(){
         File cosfile = new File("plugins/KMS Plugins/DingeDiePassierenMussen","Cosmetiks.yml");
         FileConfiguration cosmetiks= YamlConfiguration.loadConfiguration(cosfile);
+
+        //remove
+        for (int i=0;i<300;i++)cosmetiks.set(String.valueOf(i),null);
         for (int i = 0; i < cosmetikslist.size(); i++) {
             cosmetiks.set(i+".Name",cosmetikslist.get(i).getName());
             cosmetiks.set(i+".Beschreibung",cosmetikslist.get(i).getBeschreibung());

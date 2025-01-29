@@ -4,6 +4,7 @@ import me.marc3308.monsterplugin.chess.objekts.Chessbord;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +31,7 @@ public class chesscommand implements CommandExecutor, TabCompleter {
 
             switch (args[0]){
                 case "create":
-                    schachliste.add(new Chessbord(p.getLocation(),args[1]));
+                    schachliste.add(new Chessbord(p.getLocation(),args[1],false));
                     p.sendMessage(ChatColor.DARK_GREEN+"Schachbrett erstellt: "+ChatColor.GREEN+args[1]);
                     break;
                 case "edit":
@@ -43,8 +44,13 @@ public class chesscommand implements CommandExecutor, TabCompleter {
                             schachliste.stream().filter(chessbord -> chessbord.getName().equals(args[1])).findFirst().ifPresent(chessbord -> {
                                 chessbord.setGame(null);
                                 schachliste.remove(chessbord);
-                                schachliste.add(new Chessbord(p.getLocation(),args[1]));
+                                schachliste.add(new Chessbord(p.getLocation(),args[1],false));
                                 p.sendMessage(ChatColor.DARK_GREEN+"Schachbrett Location geändert: "+ChatColor.GREEN+args[1]);
+                            });
+                            case "Help":
+                            schachliste.stream().filter(chessbord -> chessbord.getName().equals(args[1])).findFirst().ifPresent(chessbord -> {
+                                chessbord.setHelp(!chessbord.isHelp());
+                                p.sendMessage(ChatColor.DARK_GREEN+"Schachbrett Help geändert: "+(chessbord.isHelp() ? ChatColor.GREEN : ChatColor.RED)+chessbord.isHelp());
                             });
                             break;
                     }
@@ -65,16 +71,18 @@ public class chesscommand implements CommandExecutor, TabCompleter {
                                 String row="";
                                 for (int j = 0; j < 8; j++) {
                                     if(chessbord.getGame().getBord()[i][j]!=null){
-                                        row+="["+(chessbord.getGame().getBord()[i][j].getArmorStand().getName().substring(2,3))+"]";
+                                        row+=((i==0 && j==0) || (i+j)%2==0 ? ChatColor.GRAY : ChatColor.WHITE) +"["
+                                                +(chessbord.getGame().getBord()[i][j].isWhite() ? ChatColor.WHITE : ChatColor.GRAY)
+                                                +(chessbord.getGame().getBord()[i][j].getArmorStand().getName().substring(2,3))+((i==0 && j==0) || (i+j)%2==0 ? ChatColor.GRAY : ChatColor.WHITE)+"]";
                                     } else {
-                                        row+="[_]";
-
+                                        row+=(((i==0 && j==0) || (i+j)%2==0) ? ChatColor.GRAY : ChatColor.WHITE)+"[_]";
                                     }
                                 }
-                                p.sendMessage(ChatColor.GREEN+row);
+                                p.sendMessage(row);
                             }
+                            p.sendMessage(ChatColor.DARK_GREEN+"HilfeStellung: "+ChatColor.GREEN+chessbord.isHelp());
                             p.sendMessage(ChatColor.DARK_GREEN+"Spieler1: "+ChatColor.GREEN+chessbord.getGame().getSpieler1().getName());
-                            p.sendMessage(ChatColor.DARK_GREEN+"Spieler2: "+ChatColor.GREEN+chessbord.getGame().getSpieler1().getName());
+                            p.sendMessage(ChatColor.DARK_GREEN+"Spieler2: "+ChatColor.GREEN+chessbord.getGame().getSpieler2().getName());
                             p.sendMessage(ChatColor.DARK_GREEN+"Zug: "+ChatColor.GREEN+chessbord.getGame().getTurn());
                             p.sendMessage(ChatColor.DARK_GREEN+"---------------------------");
 
@@ -122,6 +130,7 @@ public class chesscommand implements CommandExecutor, TabCompleter {
             if(args.length == 3){
                 list.add("Name");
                 list.add("Location");
+                list.add("Help");
             }
             if(args.length==4 && args[2].equals("Name"))list.add("<Name>");
 

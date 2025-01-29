@@ -35,6 +35,7 @@ me\marc3308\monsterplugin\commands\playerlog$9.class
 me\marc3308\monsterplugin\cosmetiks\Commandmanager.class
 me\marc3308\monsterplugin\cosmetiks\subcommands\spieler.class
 me\marc3308\monsterplugin\cosmetiks\subcommands\edit.class
+me\marc3308\monsterplugin\chess\utilitys$2.class
 me\marc3308\monsterplugin\eventlistener\nogrow.class
 me\marc3308\monsterplugin\chess\chessevents$3.class
 me\marc3308\monsterplugin\chess\objekts\Figuren.class
@@ -53,12 +54,13 @@ me\marc3308\monsterplugin\cosmetiks\Cosmetikobjekt.class
 me\marc3308\monsterplugin\cosmetiks\comamndmenu$1.class
 me\marc3308\monsterplugin\chess\objekts\Bauer.class
 me\marc3308\monsterplugin\chess\utilitys$1.class
+me\marc3308\monsterplugin\chess\objekts\Dame.class
+me\marc3308\monsterplugin\chess\chessevents$4.class
 me\marc3308\monsterplugin\commands\playerlog$3.class
 me\marc3308\monsterplugin\cosmetiks\subcommand.class
 me\marc3308\monsterplugin\cosmetiks\subcommands\give.class
 me\marc3308\monsterplugin\Monsterplugin$1.class
 me\marc3308\monsterplugin\chess\chessevents$2.class
-me\marc3308\monsterplugin\chess\objekts\Koenigin.class
 me\marc3308\monsterplugin\cosmetiks\events$2.class
 me\marc3308\monsterplugin\eventlistener\onspawn$1.class
 me\marc3308\monsterplugin\eventlistener\oregen$3.class

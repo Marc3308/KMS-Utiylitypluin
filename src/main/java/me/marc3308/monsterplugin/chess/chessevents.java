@@ -1,5 +1,8 @@
 package me.marc3308.monsterplugin.chess;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
 import me.marc3308.monsterplugin.Monsterplugin;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
@@ -15,22 +18,86 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import static me.marc3308.monsterplugin.chess.utilitys.movefigure;
-import static me.marc3308.monsterplugin.chess.utilitys.schachliste;
+import static me.marc3308.monsterplugin.chess.utilitys.*;
 
 public class chessevents implements Listener {
 
     @EventHandler
     public void onsneak(PlayerToggleSneakEvent e){
         Player p = e.getPlayer();
+
+        //todo für jeden spieler mit live updates
+        //watch game
+        schachliste.stream().filter(s -> (s.hasGame() && (s.getGame().getSpieler1().equals(p) || s.getGame().getSpieler2().equals(p)))).findFirst().ifPresent(s ->{
+            if (!p.isSneaking()) {
+                final int[] start = {0};
+                Location cameraLocation = s.getFeltstart().add(4, 6, 4);
+                ArmorStand cameraStand = p.getWorld().spawn(cameraLocation, ArmorStand.class);
+
+                cameraStand.setVisible(false);
+                cameraStand.setGravity(false);
+                cameraStand.setMarker(true);
+                cameraStand.setRotation(-90, 90); // Look down
+
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if (start[0] == 2 * 20) {
+                            Bukkit.getOnlinePlayers().forEach(p1 -> {
+                                if (!p.equals(p1)) p.hidePlayer(Monsterplugin.getPlugin(), p1);
+                            });
+                            p.sendMessage(ChatColor.DARK_GREEN+("--------Spielstand---------"));
+                            for (int i = 7; i >= 0; i--) {
+                                String row="";
+                                for (int j = 0; j < 8; j++) {
+                                    if(s.getGame().getBord()[i][j]!=null){
+                                        row+=((i==0 && j==0) || (i+j)%2==0 ? ChatColor.GRAY : ChatColor.WHITE) +"["
+                                                +(s.getGame().getBord()[i][j].isWhite() ? ChatColor.WHITE : ChatColor.GRAY)
+                                                +(s.getGame().getBord()[i][j].getArmorStand().getName().substring(2,3))+((i==0 && j==0) || (i+j)%2==0 ? ChatColor.GRAY : ChatColor.WHITE)+"]";
+                                    } else {
+                                        row+=(((i==0 && j==0) || (i+j)%2==0) ? ChatColor.GRAY : ChatColor.WHITE)+"[_]";
+                                    }
+                                }
+                                p.sendMessage(row);
+                            }
+                            p.sendMessage(ChatColor.DARK_GREEN+"---------------------------");
+                            // Packet camera
+                            PacketContainer cameraPacket = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CAMERA);
+                            cameraPacket.getIntegers().write(0, cameraStand.getEntityId());
+                            ProtocolLibrary.getProtocolManager().sendServerPacket(p, cameraPacket);
+                        } else if (start[0] != 0) {
+                            // Small ring
+                            Particle.DustOptions dustOptions = new Particle.DustOptions(Color.BLUE, 1.0f); // Color and size
+                            p.getWorld().spawnParticle(Particle.DUST, p.getLocation(), 1, 0.5, 0.5, 0.5, dustOptions);
+                            p.getWorld().spawnParticle(Particle.DUST, p.getLocation(), 1, 0.5, 0.5, 0.5, dustOptions);
+                        }
+
+                        start[0]++;
+
+                        if (!p.isOnline() || !p.isSneaking()) {
+                            // Packet
+                            PacketContainer cameraPacket2 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CAMERA);
+                            cameraPacket2.getIntegers().write(0, p.getEntityId());
+                            ProtocolLibrary.getProtocolManager().sendServerPacket(p, cameraPacket2);
+
+                            Bukkit.getOnlinePlayers().forEach(p1 -> p.showPlayer(Monsterplugin.getPlugin(), p1));
+                            cameraStand.remove();
+                            cancel();
+                            return;
+                        }
+                    }
+                }.runTaskTimer(Monsterplugin.getPlugin(), 0, 1);
+            }
+        });
+
         if(p.isSneaking())return;
 
+        //find chessgame
         schachliste.stream().filter(s ->
                 (s.getFeltend().getX()<s.getFeltstart().getX() ? s.getFeltend().getX() : s.getFeltstart().getX())<=p.getX() && (s.getFeltend().getX()>s.getFeltstart().getX() ? s.getFeltend().getX() : s.getFeltstart().getX())>=p.getX()
                     && (s.getFeltend().getZ()<s.getFeltstart().getZ() ? s.getFeltend().getZ() : s.getFeltstart().getZ())<=p.getZ() && (s.getFeltend().getZ()>s.getFeltstart().getZ() ? s.getFeltend().getZ() : s.getFeltstart().getZ())>=p.getZ()
-                        && ((s.hasGame() && !s.getGame().hasSpieler2() && !s.getGame().isGamehasstarted()) || !s.hasGame())
+                        && (!s.hasGame() || (s.hasGame() && !s.getGame().isGamehasstarted() && !s.getGame().hasSpieler2()))
         ).findFirst().ifPresent(s -> {
-
             if(!s.hasGame()){
                 s.setGame(p);
             } else {
@@ -189,11 +256,55 @@ public class chessevents implements Listener {
                             }
                             double delay = s.getFeltstart().add(x,0,z).distance(
                                     s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().getLocation());
+
+                            //on passond
+                            if(s.getGame().getBord()[x][z]==null
+                                    && s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Bauer")
+                                    && z!=Integer.valueOf(s.getGame().getTurn().split(":")[2])){
+                                // Create the firework entity at the specified location
+                                Firework firework = (Firework) s.getGame().getBord()[x-1][z].getArmorStand().getWorld().spawnEntity(
+                                        s.getGame().getBord()[x-1][z].getArmorStand().getLocation(), EntityType.FIREWORK_ROCKET);
+
+                                // Get the firework meta data
+                                FireworkMeta fireworkMeta = firework.getFireworkMeta();
+
+                                // Create a firework effect
+                                FireworkEffect effect = FireworkEffect.builder()
+                                        .withColor(Color.BLACK)
+                                        .withFade(Color.BLACK)
+                                        .with(FireworkEffect.Type.STAR)
+                                        .trail(true)
+                                        .flicker(true)
+                                        .build();
+
+                                // Add the effect to the firework meta
+                                fireworkMeta.addEffect(effect);
+
+                                // Set the power of the firework (how high it will fly)
+                                fireworkMeta.setPower(0);
+
+                                // Apply the meta to the firework
+                                firework.setFireworkMeta(fireworkMeta);
+                                firework.detonate();
+
+                                s.getGame().getBord()[x-1][z].getArmorStand().remove();
+                                s.getGame().getBord()[x-1][z]=null;
+                            }
+
                             s.getGame().getBord()[x][z]=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])];
                             s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])]=null;
+
+
+
+                            s.getGame().setLastturn(x+":"+z+":"+s.getGame().getTurn().split(":")[1]+":"+s.getGame().getTurn().split(":")[2]);
                             s.getGame().setTurn("netfinished");
                             Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->{
-                                if(s.hasGame())s.getGame().setTurn("black");
+                                if(!s.hasGame())return;
+                                //promotion
+                                if(x==7 && s.getGame().getBord()[x][z].getClass().getSimpleName().equals("Bauer")){
+                                    s.getGame().setTurn("promo:white:"+x+":"+z);
+                                    s.getGame().createpromolist(p);
+                                } else s.getGame().setTurn("black");
                             }, (long) (delay*25));
 
                         } else {
@@ -204,6 +315,8 @@ public class chessevents implements Listener {
                                 }
                                 s.getGame().setTurn(s.getGame().getTurn().split(":").length>1 && Integer.valueOf(s.getGame().getTurn().split(":")[1]).equals(x) && Integer.valueOf(s.getGame().getTurn().split(":")[2]).equals(z)
                                         ? "white" : "white:"+x+":"+z);
+
+                                if(s.isHelp())utilitys.spawnhelp(s,x,z);
 
                             }
                         }
@@ -288,11 +401,52 @@ public class chessevents implements Listener {
 
                             double delay = s.getFeltstart().add(x,0,z).distance(
                                     s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().getLocation());
+
+                            //on passond
+                            if(s.getGame().getBord()[x][z]==null
+                                    && s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Bauer")
+                                    && z!=Integer.valueOf(s.getGame().getTurn().split(":")[2])){
+                                // Create the firework entity at the specified location
+                                Firework firework = (Firework) s.getGame().getBord()[x+1][z].getArmorStand().getWorld().spawnEntity(
+                                        s.getGame().getBord()[x+1][z].getArmorStand().getLocation(), EntityType.FIREWORK_ROCKET);
+
+                                // Get the firework meta data
+                                FireworkMeta fireworkMeta = firework.getFireworkMeta();
+
+                                // Create a firework effect
+                                FireworkEffect effect = FireworkEffect.builder()
+                                        .withColor(Color.WHITE)
+                                        .withFade(Color.WHITE)
+                                        .with(FireworkEffect.Type.STAR)
+                                        .trail(true)
+                                        .flicker(true)
+                                        .build();
+
+                                // Add the effect to the firework meta
+                                fireworkMeta.addEffect(effect);
+
+                                // Set the power of the firework (how high it will fly)
+                                fireworkMeta.setPower(0);
+
+                                // Apply the meta to the firework
+                                firework.setFireworkMeta(fireworkMeta);
+                                firework.detonate();
+
+                                s.getGame().getBord()[x+1][z].getArmorStand().remove();
+                                s.getGame().getBord()[x+1][z]=null;
+                            }
+
                             s.getGame().getBord()[x][z]=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])];
                             s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])]=null;
+
+                            s.getGame().setLastturn(x+":"+z+":"+s.getGame().getTurn().split(":")[1]+":"+s.getGame().getTurn().split(":")[2]);
                             s.getGame().setTurn("netfinished");
                             Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->{
-                                if(s.hasGame())s.getGame().setTurn("white");
+                                if(!s.hasGame())return;
+                                if(x==0 && s.getGame().getBord()[x][z].getClass().getSimpleName().equals("Bauer")){
+                                    s.getGame().setTurn("promo:black:"+x+":"+z);
+                                    s.getGame().createpromolist(p);
+                                } else s.getGame().setTurn("white");
                             }, (long) (delay*25));
                         } else {
                             if(s.getGame().getBord()[x][z]!=null && !s.getGame().getBord()[x][z].isWhite()){
@@ -302,6 +456,8 @@ public class chessevents implements Listener {
                                 }
                                 s.getGame().setTurn(s.getGame().getTurn().split(":").length>1 && Integer.valueOf(s.getGame().getTurn().split(":")[1]).equals(x) && Integer.valueOf(s.getGame().getTurn().split(":")[2]).equals(z)
                                         ? "black" : "black:"+x+":"+z);
+
+                                if(s.isHelp())utilitys.spawnhelp(s,x,z);
 
                             }
                         }
@@ -330,7 +486,29 @@ public class chessevents implements Listener {
                         s.getGame().spawnbordside("black");
                     }
                     break;
+                case "promo":
+                    if(s.getGame().getTurn().split(":")[1].equals("white")){
+                        if(s.getGame().getSpieler1().equals(p)){
+                            int x1 = e.getClickedBlock().getX()-s.getFeltstart().getBlockX();
+                            int z1 = e.getClickedBlock().getZ()-s.getFeltstart().getBlockZ();
+                            if(x1==7 && z1>1 && z1<6){
+                                s.getGame().promote(x1,z1);
+                                s.getGame().setTurn("black");
+                            }
+                        }
+                    } else {
+                        if(s.getGame().getSpieler2().equals(p)){
+                            int x1 = e.getClickedBlock().getX()-s.getFeltstart().getBlockX();
+                            int z1 = e.getClickedBlock().getZ()-s.getFeltstart().getBlockZ();
+                            if(x1==0 && z1>1 && z1<6){
+                                s.getGame().promote(x1,z1);
+                                s.getGame().setTurn("white");
+                            }
+                        }
+                    }
+                    break;
             }
         });
     }
+
 }
