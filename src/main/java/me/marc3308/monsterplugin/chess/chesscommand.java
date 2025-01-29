@@ -71,11 +71,11 @@ public class chesscommand implements CommandExecutor, TabCompleter {
                                 String row="";
                                 for (int j = 0; j < 8; j++) {
                                     if(chessbord.getGame().getBord()[i][j]!=null){
-                                        row+=((i==0 && j==0) || (i+j)%2==0 ? ChatColor.GRAY : ChatColor.WHITE) +"["
-                                                +(chessbord.getGame().getBord()[i][j].isWhite() ? ChatColor.WHITE : ChatColor.GRAY)
-                                                +(chessbord.getGame().getBord()[i][j].getArmorStand().getName().substring(2,3))+((i==0 && j==0) || (i+j)%2==0 ? ChatColor.GRAY : ChatColor.WHITE)+"]";
+                                        row+=((i==0 && j==0) || (i+j)%2==0 ? ChatColor.DARK_GRAY : ChatColor.WHITE) +"["
+                                                +(chessbord.getGame().getBord()[i][j].isWhite() ? ChatColor.WHITE : ChatColor.DARK_GRAY)
+                                                +(chessbord.getGame().getBord()[i][j].getArmorStand().getName().substring(2,3))+((i==0 && j==0) || (i+j)%2==0 ? ChatColor.DARK_GRAY : ChatColor.WHITE)+"]";
                                     } else {
-                                        row+=(((i==0 && j==0) || (i+j)%2==0) ? ChatColor.GRAY : ChatColor.WHITE)+"[_]";
+                                        row+=(((i==0 && j==0) || (i+j)%2==0) ? ChatColor.DARK_GRAY : ChatColor.WHITE)+"[_]";
                                     }
                                 }
                                 p.sendMessage(row);

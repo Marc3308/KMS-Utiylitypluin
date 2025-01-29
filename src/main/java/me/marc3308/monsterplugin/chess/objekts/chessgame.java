@@ -1,5 +1,8 @@
 package me.marc3308.monsterplugin.chess.objekts;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
 import me.marc3308.monsterplugin.Monsterplugin;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
@@ -11,6 +14,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import static me.marc3308.monsterplugin.chess.utilitys.movefigure;
 
@@ -27,6 +33,11 @@ public class chessgame {
     private boolean black_queenside;
     private boolean white_queenside;
     private ArrayList<Figuren> promolist = new ArrayList<>();
+    private HashMap<Player,Location> zuschauerlist=new HashMap<>();
+
+    public void addzuschauer(Player p){
+        zuschauerlist.put(p,p.getLocation());
+    }
 
     public void setLastturn(String lastturn) {
         this.lastturn = lastturn;
@@ -128,10 +139,39 @@ public class chessgame {
         spieler1=p;
         spieler2=p2;
         final int[] i = {0};
+
+        //cammera
+        Location cameraLocation = chessbord.getFeltstart().add(4, 6, 4);
+        ArmorStand cameraStand = p.getWorld().spawn(cameraLocation, ArmorStand.class);
+        cameraStand.setVisible(false);
+        cameraStand.setGravity(false);
+        cameraStand.setMarker(true);
+        cameraStand.setRotation(-90, 90); // Look down
+
+        ArmorStand blackstand = p.getWorld().spawn(cameraLocation, ArmorStand.class);
+        blackstand.setInvulnerable(true);
+        blackstand.setGravity(false);
+        blackstand.setVisible(false);
+        blackstand.setMarker(true);
+        blackstand.setRotation(90, 90); // Look down
+
+
+
+
         new BukkitRunnable(){
             @Override
             public void run() {
+                //cancl
                 if(i[0] >=30 || !gamehasstarted){
+                    zuschauerlist.forEach((p, l) -> {
+                        // Packet
+                        PacketContainer cameraPacket2 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CAMERA);
+                        cameraPacket2.getIntegers().write(0, p.getEntityId());
+                        ProtocolLibrary.getProtocolManager().sendServerPacket(p, cameraPacket2);
+                        if(p.equals(spieler1) || p.equals(spieler2))Bukkit.getOnlinePlayers().forEach(p1 -> p.showPlayer(Monsterplugin.getPlugin(), p1));
+                            });
+                    cameraStand.remove();
+                    blackstand.remove();
                     if(gamehasstarted)gameend("none");
                     chessbord.setGame(null);
                     cancel();
@@ -139,12 +179,21 @@ public class chessgame {
                 }
                 Chessbord s = chessbord;
                 if(!spieler1.isOnline() || !spieler2.isOnline()
-                        || !((s.getFeltend().getX()<s.getFeltstart().getX() ? s.getFeltend().getX() : s.getFeltstart().getX())-2<=p.getX()
-                        && (s.getFeltend().getX()>s.getFeltstart().getX() ? s.getFeltend().getX() : s.getFeltstart().getX())+2>=p.getX()
-                        && (s.getFeltend().getZ()<s.getFeltstart().getZ() ? s.getFeltend().getZ() : s.getFeltstart().getZ())-2<=p.getZ()
-                        && (s.getFeltend().getZ()>s.getFeltstart().getZ() ? s.getFeltend().getZ() : s.getFeltstart().getZ())+2>=p.getZ()))i[0]++;
+                        || !((s.getFeltend().getX()<s.getFeltstart().getX() ? s.getFeltend().getX() : s.getFeltstart().getX())-2<=spieler1.getX()
+                        && (s.getFeltend().getX()>s.getFeltstart().getX() ? s.getFeltend().getX() : s.getFeltstart().getX())+2>=spieler1.getX()
+                        && (s.getFeltend().getY()<s.getFeltstart().getY() ? s.getFeltend().getY() : s.getFeltstart().getY())+2>=spieler1.getY()
+                        && (s.getFeltend().getY()<s.getFeltstart().getY() ? s.getFeltend().getY() : s.getFeltstart().getY())-2<=spieler1.getY()
+                        && (s.getFeltend().getZ()<s.getFeltstart().getZ() ? s.getFeltend().getZ() : s.getFeltstart().getZ())-2<=spieler1.getZ()
+                        && (s.getFeltend().getZ()>s.getFeltstart().getZ() ? s.getFeltend().getZ() : s.getFeltstart().getZ())+2>=spieler1.getZ())
+                        || !((s.getFeltend().getX()<s.getFeltstart().getX() ? s.getFeltend().getX() : s.getFeltstart().getX())-2<=spieler2.getX()
+                        && (s.getFeltend().getX()>s.getFeltstart().getX() ? s.getFeltend().getX() : s.getFeltstart().getX())+2>=spieler2.getX()
+                        && (s.getFeltend().getY()<s.getFeltstart().getY() ? s.getFeltend().getY() : s.getFeltstart().getY())+2>=spieler2.getY()
+                        && (s.getFeltend().getY()<s.getFeltstart().getY() ? s.getFeltend().getY() : s.getFeltstart().getY())-2<=spieler2.getY()
+                        && (s.getFeltend().getZ()<s.getFeltstart().getZ() ? s.getFeltend().getZ() : s.getFeltstart().getZ())-2<=spieler2.getZ()
+                        && (s.getFeltend().getZ()>s.getFeltstart().getZ() ? s.getFeltend().getZ() : s.getFeltstart().getZ())+2>=spieler2.getZ()))i[0]++;
                 else i[0]=0;
 
+                //out timmer
                 if(i[0]!=0){
                     ArmorStand ar=p.getWorld().spawn(s.getFeltstart().add(4,0,4),ArmorStand.class);
                     ar.setInvulnerable(true);
@@ -154,6 +203,68 @@ public class chessgame {
                     ar.setVisible(false);
                     ar.setSmall(true);
                     Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> ar.remove(),20);
+                }
+
+                //camera?
+                Iterator<Map.Entry<Player, Location>> iterator = zuschauerlist.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<Player, Location> entry = iterator.next();
+                    Player p = entry.getKey();
+                    Location l = entry.getValue();
+
+                    // Camera logic
+                    if (!p.isOnline() || !p.getLocation().equals(l) || !p.isSneaking()) {
+                        // Packet
+                        PacketContainer cameraPacket2 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CAMERA);
+                        cameraPacket2.getIntegers().write(0, p.getEntityId());
+                        ProtocolLibrary.getProtocolManager().sendServerPacket(p, cameraPacket2);
+
+                        if (p.equals(spieler1) || p.equals(spieler2)) {
+                            Bukkit.getOnlinePlayers().forEach(p1 -> p.showPlayer(Monsterplugin.getPlugin(), p1));
+                        }
+
+                        // Remove Zuschauer safely
+                        iterator.remove();
+                        continue;
+                    }
+
+                    // Vanish logic
+                    if (p.equals(spieler1) || p.equals(spieler2)) {
+                        Bukkit.getOnlinePlayers().forEach(p1 -> p.hidePlayer(Monsterplugin.getPlugin(), p1));
+                    }
+
+                    boolean schwarzeseite =chessbord.getFeltstart().add(3,0,3.5).distance(p.getLocation())>=chessbord.getFeltstart().add(4,0,3.5).distance(p.getLocation());
+                    // Packet camera
+                    PacketContainer cameraPacket = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CAMERA);
+                    cameraPacket.getIntegers().write(0, schwarzeseite  ? blackstand.getEntityId() : cameraStand.getEntityId());
+                    ProtocolLibrary.getProtocolManager().sendServerPacket(p, cameraPacket);
+
+                    // Auto update logic
+                    p.sendMessage(ChatColor.DARK_GREEN + ("-----Spielstand------"));
+                    for (int i = (schwarzeseite ? 0 : 7);
+                         schwarzeseite ? i < 8 : i >= 0;
+                         i = schwarzeseite ? i + 1 : i - 1) {
+
+                        StringBuilder row = new StringBuilder();
+                        for (int j = (!schwarzeseite ? 0 : 7);
+                             !schwarzeseite ? j < 8 : j >= 0;
+                             j = !schwarzeseite ? j + 1 : j - 1) {
+
+                            if (s.getGame().getBord()[i][j] != null) {
+                                row.append(((i == 0 && j == 0) || (i + j) % 2 == 0 ? ChatColor.DARK_GRAY : ChatColor.WHITE))
+                                        .append("[")
+                                        .append(s.getGame().getBord()[i][j].isWhite() ? ChatColor.WHITE : ChatColor.DARK_GRAY)
+                                        .append(s.getGame().getBord()[i][j].getArmorStand().getName().substring(2, 3))
+                                        .append((i == 0 && j == 0) || (i + j) % 2 == 0 ? ChatColor.DARK_GRAY : ChatColor.WHITE)
+                                        .append("]");
+                            } else {
+                                row.append(((i == 0 && j == 0) || (i + j) % 2 == 0 ? ChatColor.DARK_GRAY : ChatColor.WHITE))
+                                        .append("[_]");
+                            }
+                        }
+                        p.sendMessage(row.toString());
+                    }
+                    p.sendMessage(ChatColor.DARK_GREEN + "--------------------");
                 }
             }
         }.runTaskTimer(Monsterplugin.getPlugin(),0,20);

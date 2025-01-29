@@ -25,46 +25,23 @@ public class chessevents implements Listener {
     @EventHandler
     public void onsneak(PlayerToggleSneakEvent e){
         Player p = e.getPlayer();
-
-        //todo für jeden spieler mit live updates
         //watch game
-        schachliste.stream().filter(s -> (s.hasGame() && (s.getGame().getSpieler1().equals(p) || s.getGame().getSpieler2().equals(p)))).findFirst().ifPresent(s ->{
+        schachliste.stream().filter(s -> (s.hasGame() && s.getGame().isGamehasstarted()
+                && (s.getFeltend().getX()<s.getFeltstart().getX() ? s.getFeltend().getX() : s.getFeltstart().getX())-5<=p.getX()
+                && (s.getFeltend().getX()>s.getFeltstart().getX() ? s.getFeltend().getX() : s.getFeltstart().getX())+5>=p.getX()
+                && (s.getFeltend().getY()<s.getFeltstart().getY() ? s.getFeltend().getY() : s.getFeltstart().getY())+7>=p.getY()
+                && (s.getFeltend().getY()<s.getFeltstart().getY() ? s.getFeltend().getY() : s.getFeltstart().getY())-1<=p.getY()
+                && (s.getFeltend().getZ()<s.getFeltstart().getZ() ? s.getFeltend().getZ() : s.getFeltstart().getZ())-5<=p.getZ()
+                && (s.getFeltend().getZ()>s.getFeltstart().getZ() ? s.getFeltend().getZ() : s.getFeltstart().getZ())+5>=p.getZ())).findFirst().ifPresent(s ->{
             if (!p.isSneaking()) {
                 final int[] start = {0};
-                Location cameraLocation = s.getFeltstart().add(4, 6, 4);
-                ArmorStand cameraStand = p.getWorld().spawn(cameraLocation, ArmorStand.class);
-
-                cameraStand.setVisible(false);
-                cameraStand.setGravity(false);
-                cameraStand.setMarker(true);
-                cameraStand.setRotation(-90, 90); // Look down
-
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        if (start[0] == 2 * 20) {
-                            Bukkit.getOnlinePlayers().forEach(p1 -> {
-                                if (!p.equals(p1)) p.hidePlayer(Monsterplugin.getPlugin(), p1);
-                            });
-                            p.sendMessage(ChatColor.DARK_GREEN+("--------Spielstand---------"));
-                            for (int i = 7; i >= 0; i--) {
-                                String row="";
-                                for (int j = 0; j < 8; j++) {
-                                    if(s.getGame().getBord()[i][j]!=null){
-                                        row+=((i==0 && j==0) || (i+j)%2==0 ? ChatColor.GRAY : ChatColor.WHITE) +"["
-                                                +(s.getGame().getBord()[i][j].isWhite() ? ChatColor.WHITE : ChatColor.GRAY)
-                                                +(s.getGame().getBord()[i][j].getArmorStand().getName().substring(2,3))+((i==0 && j==0) || (i+j)%2==0 ? ChatColor.GRAY : ChatColor.WHITE)+"]";
-                                    } else {
-                                        row+=(((i==0 && j==0) || (i+j)%2==0) ? ChatColor.GRAY : ChatColor.WHITE)+"[_]";
-                                    }
-                                }
-                                p.sendMessage(row);
-                            }
-                            p.sendMessage(ChatColor.DARK_GREEN+"---------------------------");
-                            // Packet camera
-                            PacketContainer cameraPacket = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CAMERA);
-                            cameraPacket.getIntegers().write(0, cameraStand.getEntityId());
-                            ProtocolLibrary.getProtocolManager().sendServerPacket(p, cameraPacket);
+                        if (start[0] >= 1 * 20) {
+                            s.getGame().addzuschauer(p);
+                            cancel();
+                            return;
                         } else if (start[0] != 0) {
                             // Small ring
                             Particle.DustOptions dustOptions = new Particle.DustOptions(Color.BLUE, 1.0f); // Color and size
@@ -73,18 +50,8 @@ public class chessevents implements Listener {
                         }
 
                         start[0]++;
+                        if (!p.isOnline() || !p.isSneaking())cancel();
 
-                        if (!p.isOnline() || !p.isSneaking()) {
-                            // Packet
-                            PacketContainer cameraPacket2 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CAMERA);
-                            cameraPacket2.getIntegers().write(0, p.getEntityId());
-                            ProtocolLibrary.getProtocolManager().sendServerPacket(p, cameraPacket2);
-
-                            Bukkit.getOnlinePlayers().forEach(p1 -> p.showPlayer(Monsterplugin.getPlugin(), p1));
-                            cameraStand.remove();
-                            cancel();
-                            return;
-                        }
                     }
                 }.runTaskTimer(Monsterplugin.getPlugin(), 0, 1);
             }
@@ -169,9 +136,9 @@ public class chessevents implements Listener {
         if(!e.getAction().isLeftClick())return;
         if(e.getClickedBlock()==null)return;
         schachliste.stream().filter(s ->
-                        (s.getFeltend().getX()<s.getFeltstart().getX() ? s.getFeltend().getX() : s.getFeltstart().getX())<=p.getX() && (s.getFeltend().getX()>s.getFeltstart().getX() ? s.getFeltend().getX() : s.getFeltstart().getX())>=p.getX()
+                        (s.getFeltend().getX()<s.getFeltstart().getX() ? s.getFeltend().getX() : s.getFeltstart().getX())-1<=p.getX() && (s.getFeltend().getX()>s.getFeltstart().getX() ? s.getFeltend().getX() : s.getFeltstart().getX())+1>=p.getX()
                                 && s.getFeltstart().getBlockY()==e.getClickedBlock().getY()+1
-                                && (s.getFeltend().getZ()<s.getFeltstart().getZ() ? s.getFeltend().getZ() : s.getFeltstart().getZ())<=p.getZ() && (s.getFeltend().getZ()>s.getFeltstart().getZ() ? s.getFeltend().getZ() : s.getFeltstart().getZ())>=p.getZ()
+                                && (s.getFeltend().getZ()<s.getFeltstart().getZ() ? s.getFeltend().getZ() : s.getFeltstart().getZ())-1<=p.getZ() && (s.getFeltend().getZ()>s.getFeltstart().getZ() ? s.getFeltend().getZ() : s.getFeltstart().getZ())+1>=p.getZ()
                                 && s.hasGame() && s.getGame().isGamehasstarted() && (s.getGame().getSpieler1().equals(p) || s.getGame().getSpieler2().equals(p))
                 ).findFirst().ifPresent(s -> {
             switch (s.getGame().getTurn().split(":")[0]){
@@ -232,6 +199,8 @@ public class chessevents implements Listener {
                                     }
                                 }.runTaskTimer(Monsterplugin.getPlugin(),0,10);
                             }
+
+                            //caseling
                             if(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Koenig")
                                     || s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Turm")){
                                 if(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Koenig")){
@@ -254,6 +223,7 @@ public class chessevents implements Listener {
                                     }
                                 }
                             }
+                            //dalay
                             double delay = s.getFeltstart().add(x,0,z).distance(
                                     s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().getLocation());
 
@@ -376,12 +346,14 @@ public class chessevents implements Listener {
                                     }
                                 }.runTaskTimer(Monsterplugin.getPlugin(),0,10);
                             }
+
+                            //hohade
                             if(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Koenig")
                                     ||s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Turm")){
                                 if(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Koenig")){
                                     if(Integer.valueOf(s.getGame().getTurn().split(":")[2])+2==z){
                                         movefigure(s.getGame().getBord()[7][7].getArmorStand(),s.getFeltstart().clone().add(7,0,5).clone().add(0.5,-1.9,0.5));
-                                        s.getGame().getBord()[7][5]=s.getGame().getBord()[0][7];
+                                        s.getGame().getBord()[7][5]=s.getGame().getBord()[7][7];
                                         s.getGame().getBord()[7][7]=null;
                                     } else if(Integer.valueOf(s.getGame().getTurn().split(":")[2])-2==z){
                                         movefigure(s.getGame().getBord()[7][0].getArmorStand(),s.getFeltstart().clone().add(7,0,3).clone().add(0.5,-1.9,0.5));
