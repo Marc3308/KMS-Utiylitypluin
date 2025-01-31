@@ -4,7 +4,13 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import me.marc3308.monsterplugin.Monsterplugin;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
+import org.bukkit.Color;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
@@ -14,10 +20,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
+import static me.marc3308.monsterplugin.chess.utilitys.darferdas;
 import static me.marc3308.monsterplugin.chess.utilitys.movefigure;
 
 public class chessgame {
@@ -32,11 +37,21 @@ public class chessgame {
     private boolean black_kingside;
     private boolean black_queenside;
     private boolean white_queenside;
+    private ArmorStand whitstand;
+    private ArmorStand blackstand;
     private ArrayList<Figuren> promolist = new ArrayList<>();
-    private HashMap<Player,Location> zuschauerlist=new HashMap<>();
+    private ArrayList<Player> zuschauerlist=new ArrayList<>();
 
-    public void addzuschauer(Player p){
-        zuschauerlist.put(p,p.getLocation());
+    public ArmorStand getWhitstand() {
+        return whitstand;
+    }
+
+    public ArmorStand getBlackstand() {
+        return blackstand;
+    }
+
+    public ArrayList<Player> getZuschauerlist() {
+        return zuschauerlist;
     }
 
     public void setLastturn(String lastturn) {
@@ -134,43 +149,38 @@ public class chessgame {
         black_kingside = true;
         black_queenside = true;
         gamehasstarted = true;
-        p.setSneaking(false);
-        p2.setSneaking(false);
         spieler1=p;
         spieler2=p2;
         final int[] i = {0};
 
         //cammera
         Location cameraLocation = chessbord.getFeltstart().add(4, 6, 4);
-        ArmorStand cameraStand = p.getWorld().spawn(cameraLocation, ArmorStand.class);
-        cameraStand.setVisible(false);
-        cameraStand.setGravity(false);
-        cameraStand.setMarker(true);
-        cameraStand.setRotation(-90, 90); // Look down
+        whitstand = p.getWorld().spawn(cameraLocation, ArmorStand.class);
+        whitstand.setVisible(false);
+        whitstand.setGravity(false);
+        whitstand.setMarker(true);
+        whitstand.setRotation(-90, 90); // Look down
 
-        ArmorStand blackstand = p.getWorld().spawn(cameraLocation, ArmorStand.class);
+        blackstand = p.getWorld().spawn(cameraLocation, ArmorStand.class);
         blackstand.setInvulnerable(true);
         blackstand.setGravity(false);
         blackstand.setVisible(false);
         blackstand.setMarker(true);
         blackstand.setRotation(90, 90); // Look down
 
-
-
-
         new BukkitRunnable(){
             @Override
             public void run() {
                 //cancl
                 if(i[0] >=30 || !gamehasstarted){
-                    zuschauerlist.forEach((p, l) -> {
+                    zuschauerlist.forEach(p -> {
                         // Packet
                         PacketContainer cameraPacket2 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CAMERA);
                         cameraPacket2.getIntegers().write(0, p.getEntityId());
                         ProtocolLibrary.getProtocolManager().sendServerPacket(p, cameraPacket2);
                         if(p.equals(spieler1) || p.equals(spieler2))Bukkit.getOnlinePlayers().forEach(p1 -> p.showPlayer(Monsterplugin.getPlugin(), p1));
-                            });
-                    cameraStand.remove();
+                    });
+                    whitstand.remove();
                     blackstand.remove();
                     if(gamehasstarted)gameend("none");
                     chessbord.setGame(null);
@@ -206,14 +216,12 @@ public class chessgame {
                 }
 
                 //camera?
-                Iterator<Map.Entry<Player, Location>> iterator = zuschauerlist.entrySet().iterator();
+                Iterator<Player> iterator = zuschauerlist.iterator();
                 while (iterator.hasNext()) {
-                    Map.Entry<Player, Location> entry = iterator.next();
-                    Player p = entry.getKey();
-                    Location l = entry.getValue();
+                    Player p = iterator.next();
 
                     // Camera logic
-                    if (!p.isOnline() || !p.getLocation().equals(l) || !p.isSneaking()) {
+                    if (!p.isOnline()) {
                         // Packet
                         PacketContainer cameraPacket2 = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CAMERA);
                         cameraPacket2.getIntegers().write(0, p.getEntityId());
@@ -236,35 +244,71 @@ public class chessgame {
                     boolean schwarzeseite =chessbord.getFeltstart().add(3,0,3.5).distance(p.getLocation())>=chessbord.getFeltstart().add(4,0,3.5).distance(p.getLocation());
                     // Packet camera
                     PacketContainer cameraPacket = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CAMERA);
-                    cameraPacket.getIntegers().write(0, schwarzeseite  ? blackstand.getEntityId() : cameraStand.getEntityId());
+                    cameraPacket.getIntegers().write(0, schwarzeseite  ? blackstand.getEntityId() : whitstand.getEntityId());
                     ProtocolLibrary.getProtocolManager().sendServerPacket(p, cameraPacket);
 
                     // Auto update logic
-                    p.sendMessage(ChatColor.DARK_GREEN + ("-----Spielstand------"));
+                    p.sendMessage(ChatColor.DARK_GREEN + ("------Spielstand------"));
                     for (int i = (schwarzeseite ? 0 : 7);
                          schwarzeseite ? i < 8 : i >= 0;
                          i = schwarzeseite ? i + 1 : i - 1) {
 
-                        StringBuilder row = new StringBuilder();
+                        Component row = Component.text("[" + (i + 1) + "]").color(NamedTextColor.DARK_GREEN); // Row label
+
                         for (int j = (!schwarzeseite ? 0 : 7);
                              !schwarzeseite ? j < 8 : j >= 0;
                              j = !schwarzeseite ? j + 1 : j - 1) {
 
+                            // Determine board cell color
+                            ChatColor squareColor = s.getGame().getTurn().split(":").length>1 && darferdas(chessbord,Integer.valueOf(s.getGame().getTurn().split(":")[1]),Integer.valueOf(s.getGame().getTurn().split(":")[2]),i,j)
+                                    ? s.getGame().getBord()[i][j] != null ? ChatColor.RED : ChatColor.GREEN : (i == 0 && j == 0) || (i + j) % 2 == 0 ? ChatColor.DARK_GRAY : ChatColor.WHITE;
+
+                            // Default empty cell component
+                            String columnLetter = switch (j) {
+                                case 0 -> "A";
+                                case 1 -> "B";
+                                case 2 -> "C";
+                                case 3 -> "D";
+                                case 4 -> "E";
+                                case 5 -> "F";
+                                case 6 -> "G";
+                                default -> "H";
+                            };
+
+                            String name ="";
+                            String hover="";
+                            String command = columnLetter + (i+1);
+                            Component boardCell;
+
                             if (s.getGame().getBord()[i][j] != null) {
-                                row.append(((i == 0 && j == 0) || (i + j) % 2 == 0 ? ChatColor.DARK_GRAY : ChatColor.WHITE))
-                                        .append("[")
-                                        .append(s.getGame().getBord()[i][j].isWhite() ? ChatColor.WHITE : ChatColor.DARK_GRAY)
-                                        .append(s.getGame().getBord()[i][j].getArmorStand().getName().substring(2, 3))
-                                        .append((i == 0 && j == 0) || (i + j) % 2 == 0 ? ChatColor.DARK_GRAY : ChatColor.WHITE)
-                                        .append("]");
+                                String pieceName = s.getGame().getBord()[i][j].getArmorStand().getName().substring(2, 3);
+                                ChatColor pieceColor = s.getGame().getTurn().split(":").length>1
+                                        && Integer.valueOf(s.getGame().getTurn().split(":")[1])==i
+                                        && Integer.valueOf(s.getGame().getTurn().split(":")[2])==j ? ChatColor.GOLD : s.getGame().getBord()[i][j].isWhite() ? ChatColor.WHITE : ChatColor.DARK_GRAY;
+
+                                name=squareColor+"[" +pieceColor + pieceName + squareColor +"]";
+                                hover=command+s.getGame().getBord()[i][j].getArmorStand().getName().substring(0, 2)+" ["+s.getGame().getBord()[i][j].getArmorStand().getName().substring(2)+"]";
+                                boardCell = Component.text(name)
+                                        .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,"/cpe "+command))
+                                        .hoverEvent(HoverEvent.showText(Component.text(hover)));
                             } else {
-                                row.append(((i == 0 && j == 0) || (i + j) % 2 == 0 ? ChatColor.DARK_GRAY : ChatColor.WHITE))
-                                        .append("[_]");
+                                name=squareColor+"[_]";
+                                hover=command;
+                                boardCell = Component.text(name)
+                                        .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,"/cpe "+command))
+                                        .hoverEvent(HoverEvent.showText(Component.text(hover)));
                             }
+                            Component normalcell = Component.text(name)
+                                    .hoverEvent(HoverEvent.showText(Component.text(hover)));
+                            row = row.append(!p.equals(spieler1) && !p.equals(spieler2) ? normalcell : boardCell);
                         }
-                        p.sendMessage(row.toString());
+
+                        // Send the row component to the player
+                        p.sendMessage(row);
                     }
-                    p.sendMessage(ChatColor.DARK_GREEN + "--------------------");
+
+                    p.sendMessage(Component.text(schwarzeseite ? "[X][H][G][F][E][D][C][B][A]" : "[X][A][B][C][D][E][F][G][H]")
+                            .color(NamedTextColor.DARK_GREEN));
                 }
             }
         }.runTaskTimer(Monsterplugin.getPlugin(),0,20);
@@ -285,7 +329,7 @@ public class chessgame {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if(bord[i][j]==null)continue;
-                movefigure(bord[i][j].getArmorStand(),bord[i][j].getArmorStand().getLocation().clone().add(0,-3,0));
+                movefigure(bord[i][j].getArmorStand(),bord[i][j].getArmorStand().getLocation().clone().add(0,-3,0),3);
                 int finalI = i;
                 int finalJ = j;
                 Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> bord[finalI][finalJ].getArmorStand().remove(),20*4);
@@ -363,7 +407,7 @@ public class chessgame {
         bord[Integer.valueOf(lastturn.split(":")[0])][Integer.valueOf(lastturn.split(":")[1])].getArmorStand().remove();
         bord[Integer.valueOf(lastturn.split(":")[0])][Integer.valueOf(lastturn.split(":")[1])] = promolist.get(z-2);
         promolist.remove(z-2);
-        moveall(2);
+        Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->moveall(2),20);
         promolist.forEach(f -> f.getArmorStand().remove());
         promolist.clear();
     }
@@ -385,7 +429,7 @@ public class chessgame {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if(bord[i][j]==null)continue;
-                movefigure(bord[i][j].getArmorStand(),bord[i][j].getArmorStand().getLocation().clone().add(0,y,0));
+                movefigure(bord[i][j].getArmorStand(),bord[i][j].getArmorStand().getLocation().clone().add(0,y,0),3);
             }
         }
     }

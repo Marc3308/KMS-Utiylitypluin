@@ -31,7 +31,7 @@ public class chesscommand implements CommandExecutor, TabCompleter {
 
             switch (args[0]){
                 case "create":
-                    schachliste.add(new Chessbord(p.getLocation(),args[1],false));
+                    schachliste.add(new Chessbord(p.getLocation(),args[1],false,3));
                     p.sendMessage(ChatColor.DARK_GREEN+"Schachbrett erstellt: "+ChatColor.GREEN+args[1]);
                     break;
                 case "edit":
@@ -44,13 +44,19 @@ public class chesscommand implements CommandExecutor, TabCompleter {
                             schachliste.stream().filter(chessbord -> chessbord.getName().equals(args[1])).findFirst().ifPresent(chessbord -> {
                                 chessbord.setGame(null);
                                 schachliste.remove(chessbord);
-                                schachliste.add(new Chessbord(p.getLocation(),args[1],false));
+                                schachliste.add(new Chessbord(p.getLocation(),args[1],chessbord.isHelp(),chessbord.getTime()));
                                 p.sendMessage(ChatColor.DARK_GREEN+"Schachbrett Location geändert: "+ChatColor.GREEN+args[1]);
                             });
                             case "Help":
                             schachliste.stream().filter(chessbord -> chessbord.getName().equals(args[1])).findFirst().ifPresent(chessbord -> {
                                 chessbord.setHelp(!chessbord.isHelp());
                                 p.sendMessage(ChatColor.DARK_GREEN+"Schachbrett Help geändert: "+(chessbord.isHelp() ? ChatColor.GREEN : ChatColor.RED)+chessbord.isHelp());
+                            });
+                            break;
+                        case "Time":
+                            schachliste.stream().filter(chessbord -> chessbord.getName().equals(args[1])).findFirst().ifPresent(chessbord -> {
+                                chessbord.setTime(Integer.parseInt(args[3]));
+                                p.sendMessage(ChatColor.DARK_GREEN+"Schachbrett Time geändert: "+ChatColor.GREEN+args[3]);
                             });
                             break;
                     }
@@ -83,6 +89,7 @@ public class chesscommand implements CommandExecutor, TabCompleter {
                             p.sendMessage(ChatColor.DARK_GREEN+"HilfeStellung: "+ChatColor.GREEN+chessbord.isHelp());
                             p.sendMessage(ChatColor.DARK_GREEN+"Spieler1: "+ChatColor.GREEN+chessbord.getGame().getSpieler1().getName());
                             p.sendMessage(ChatColor.DARK_GREEN+"Spieler2: "+ChatColor.GREEN+chessbord.getGame().getSpieler2().getName());
+                            p.sendMessage(ChatColor.DARK_GREEN+"Zeit: "+ChatColor.GREEN+chessbord.getTime());
                             p.sendMessage(ChatColor.DARK_GREEN+"Zug: "+ChatColor.GREEN+chessbord.getGame().getTurn());
                             p.sendMessage(ChatColor.DARK_GREEN+"---------------------------");
 
@@ -131,7 +138,9 @@ public class chesscommand implements CommandExecutor, TabCompleter {
                 list.add("Name");
                 list.add("Location");
                 list.add("Help");
+                list.add("Time");
             }
+            if(args.length == 4 && args[2].equals("Time"))list.add("<Time>");
             if(args.length==4 && args[2].equals("Name"))list.add("<Name>");
 
             if(list.isEmpty())return list;

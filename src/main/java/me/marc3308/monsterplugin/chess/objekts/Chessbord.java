@@ -14,8 +14,10 @@ public class Chessbord {
     private Location feltstart;
     private Location feltend;
     private boolean help;
+    private int time;
 
-    public Chessbord(Location loc, String name, boolean help) {
+    public Chessbord(Location loc, String name, boolean help, int time) {
+        this.time =time;
         this.help=help;
         this.name = name;
         this.feltstart =loc.getBlock().getLocation();
@@ -28,6 +30,14 @@ public class Chessbord {
         }
     }
 
+    public int getTime() {
+        return time;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
+
     public void setHelp(boolean help) {
         this.help = help;
     }
@@ -38,6 +48,8 @@ public class Chessbord {
 
     public void setGame(Player p) {
         if(p==null && game!=null && game.isGamehasstarted()){
+            game.getBlackstand().remove();
+            game.getWhitstand().remove();
             game.setGamehasstarted(false);
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {

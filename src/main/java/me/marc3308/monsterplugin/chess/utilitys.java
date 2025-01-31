@@ -6,8 +6,14 @@ import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -18,7 +24,7 @@ public class utilitys {
 
     public static ArrayList<Chessbord> schachliste = new ArrayList<>();
 
-    public static void movefigure(ArmorStand ar, Location newloc){
+    public static void movefigure(ArmorStand ar, Location newloc, int time){
 
         // Start moving the armor stand
         new BukkitRunnable() {
@@ -41,7 +47,7 @@ public class utilitys {
                                 ? ar.getLocation().getZ()==newloc.getZ() ? 0 : -0.1 : 0.1));
 
             }
-        }.runTaskTimer(Monsterplugin.getPlugin(), 0L, 3L);
+        }.runTaskTimer(Monsterplugin.getPlugin(), 0L, time);
     }
 
     public static boolean darferdas(Chessbord s, int x1, int z1, int x2, int z2){
@@ -49,7 +55,7 @@ public class utilitys {
         switch (s.getGame().getBord()[x1][z1].getClass().getSimpleName()){
             case "Bauer":
                 if(s.getGame().getBord()[x1][z1].isWhite()){
-                    if(s.getGame().getBord()[x2][z2]==null && (x1+1==x2 || (x1+2==x2 && x1==1)) && z1==z2)return true;
+                    if(s.getGame().getBord()[x2][z2]==null && (x1+1==x2 || (x1+2==x2 && x1==1 && s.getGame().getBord()[x2+1][z2]==null)) && z1==z2)return true;
                     if(s.getGame().getBord()[x2][z2]!=null && !s.getGame().getBord()[x2][z2].isWhite() && x1+1==x2 && (z1+1==z2 || z1-1==z2))return true;
 
                     if(s.getGame().getLastturn()!=null && s.getGame().getBord()[x2][z2]==null && x2==5 && (z2+1==z1 || z2-1==z1) && x1==4
@@ -58,7 +64,7 @@ public class utilitys {
                             && s.getGame().getBord()[Integer.valueOf(s.getGame().getLastturn().split(":")[0])][Integer.valueOf(s.getGame().getLastturn().split(":")[1])].getClass().getSimpleName().equals("Bauer")
                             && Integer.valueOf(s.getGame().getLastturn().split(":")[2])-2==4)return true;
                 } else {
-                    if(s.getGame().getBord()[x2][z2]==null && (x1-1==x2 || (x1-2==x2 && x1==6)) && z1==z2)return true;
+                    if(s.getGame().getBord()[x2][z2]==null && (x1-1==x2 || (x1-2==x2 && x1==6 && s.getGame().getBord()[x2-1][z2]==null)) && z1==z2)return true;
                     if(s.getGame().getBord()[x2][z2]!=null && s.getGame().getBord()[x2][z2].isWhite() && x1-1==x2 && (z1+1==z2 || z1-1==z2))return true;
                     if(s.getGame().getLastturn()!=null && s.getGame().getBord()[x2][z2]==null && x2==2 && (z2+1==z1 || z2-1==z1) && x1==3
                             && s.getGame().getLastturn().split(":")[0].equals(String.valueOf(x1))
@@ -225,6 +231,7 @@ public class utilitys {
             cosmetiks.set(i+".Location",schachliste.get(i).getFeltstart());
             cosmetiks.set(i+".Name",schachliste.get(i).getName());
             cosmetiks.set(i+".Help",schachliste.get(i).isHelp());
+            cosmetiks.set(i+".Time",schachliste.get(i).getTime());
         }
 
         try {
@@ -244,6 +251,7 @@ public class utilitys {
                     cosmetiks.getLocation(i+".Location")
                     ,cosmetiks.getString(i+".Name")
                     ,cosmetiks.getBoolean(i+".Help")
+                    ,cosmetiks.getInt(i+".Time")
             ));
         }
     }
@@ -446,5 +454,348 @@ public class utilitys {
         ar.setHelmet(helmet);
 
         Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(),() -> ar.remove(),3);
+    }
+
+    public static void makeamove(Chessbord s, Player p, Location blocklock){
+        switch (s.getGame().getTurn().split(":")[0]){
+            case "white":
+                if(s.getGame().getSpieler1().equals(p)){
+                    int x = blocklock.getBlockX()-s.getFeltstart().getBlockX();
+                    int z = blocklock.getBlockZ()-s.getFeltstart().getBlockZ();
+                    if(x<0 || x>7 || z<0 || z>7)return;
+                    if(s.getGame().getTurn().equals("netfinished"))return;
+                    if(s.getGame().getTurn().split(":").length>1
+                            && (s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])]==null
+                            || s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].isWhite())
+                            && utilitys.darferdas(s,Integer.valueOf(s.getGame().getTurn().split(":")[1]),Integer.valueOf(s.getGame().getTurn().split(":")[2]),x,z)){
+
+                        movefigure(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand(),s.getFeltstart().clone().add(x,0,z).clone().add(0.5,-1.9,0.5),s.getTime());
+                        s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().removePotionEffect(PotionEffectType.GLOWING);
+                        if(s.getGame().getBord()[x][z]!=null && s.getGame().getBord()[x][z].isWhite()!=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].isWhite()){
+                            ArmorStand ar1=s.getGame().getBord()[x][z].getArmorStand();
+                            ArmorStand ar2=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand();
+                            Boolean iswhite=s.getGame().getBord()[x][z].isWhite();
+
+                            new BukkitRunnable(){
+                                @Override
+                                public void run() {
+                                    if(ar1.getLocation().distance(
+                                            ar2.getLocation())<=0.3){
+                                        p.getWorld().playSound(ar1, Sound.ENTITY_ARMOR_STAND_BREAK,3,4);
+                                        // Create the firework entity at the specified location
+                                        Firework firework = (Firework) ar1.getWorld().spawnEntity(
+                                                ar1.getLocation(), EntityType.FIREWORK_ROCKET);
+
+                                        // Get the firework meta data
+                                        FireworkMeta fireworkMeta = firework.getFireworkMeta();
+
+                                        // Create a firework effect
+                                        FireworkEffect effect = FireworkEffect.builder()
+                                                .withColor(iswhite ? Color.WHITE : Color.BLACK)
+                                                .withFade(iswhite ? Color.WHITE : Color.BLACK)
+                                                .with(FireworkEffect.Type.STAR)
+                                                .trail(true)
+                                                .flicker(true)
+                                                .build();
+
+                                        // Add the effect to the firework meta
+                                        fireworkMeta.addEffect(effect);
+
+                                        // Set the power of the firework (how high it will fly)
+                                        fireworkMeta.setPower(0);
+
+                                        // Apply the meta to the firework
+                                        firework.setFireworkMeta(fireworkMeta);
+                                        firework.detonate();
+
+                                        if(ar1.getName().substring(2,ar1.getName().length()).equals("König"))s.getGame().gameend(iswhite ? "black" : "white");
+                                        ar1.remove();
+                                        cancel();
+                                    }
+                                }
+                            }.runTaskTimer(Monsterplugin.getPlugin(),0,10);
+                        }
+
+                        //caseling
+                        if(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Koenig")
+                                || s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Turm")){
+                            if(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Koenig")){
+                                if(Integer.valueOf(s.getGame().getTurn().split(":")[2])+2==z){
+                                    movefigure(s.getGame().getBord()[0][7].getArmorStand(),s.getFeltstart().clone().add(0,0,5).clone().add(0.5,-1.9,0.5),s.getTime());
+                                    s.getGame().getBord()[0][5]=s.getGame().getBord()[0][7];
+                                    s.getGame().getBord()[0][7]=null;
+                                } else if(Integer.valueOf(s.getGame().getTurn().split(":")[2])-2==z){
+                                    movefigure(s.getGame().getBord()[0][0].getArmorStand(),s.getFeltstart().clone().add(0,0,3).clone().add(0.5,-1.9,0.5),s.getTime());
+                                    s.getGame().getBord()[0][3]=s.getGame().getBord()[0][0];
+                                    s.getGame().getBord()[0][0]=null;
+                                }
+                                s.getGame().setWhite_kingside(false);
+                                s.getGame().setWhite_queenside(false);
+                            } else {
+                                if(Integer.valueOf(s.getGame().getTurn().split(":")[1])==0 && Integer.valueOf(s.getGame().getTurn().split(":")[2])==0){
+                                    s.getGame().setWhite_queenside(false);
+                                } else if(Integer.valueOf(s.getGame().getTurn().split(":")[1])==0 && Integer.valueOf(s.getGame().getTurn().split(":")[2])==7){
+                                    s.getGame().setWhite_kingside(false);
+                                }
+                            }
+                        }
+                        //dalay
+                        double delay = s.getFeltstart().add(x,0,z).distance(
+                                s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().getLocation());
+
+                        //on passond
+                        if(s.getGame().getBord()[x][z]==null
+                                && s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Bauer")
+                                && z!=Integer.valueOf(s.getGame().getTurn().split(":")[2])){
+                            // Create the firework entity at the specified location
+                            Firework firework = (Firework) s.getGame().getBord()[x-1][z].getArmorStand().getWorld().spawnEntity(
+                                    s.getGame().getBord()[x-1][z].getArmorStand().getLocation(), EntityType.FIREWORK_ROCKET);
+
+                            // Get the firework meta data
+                            FireworkMeta fireworkMeta = firework.getFireworkMeta();
+
+                            // Create a firework effect
+                            FireworkEffect effect = FireworkEffect.builder()
+                                    .withColor(Color.BLACK)
+                                    .withFade(Color.BLACK)
+                                    .with(FireworkEffect.Type.STAR)
+                                    .trail(true)
+                                    .flicker(true)
+                                    .build();
+
+                            // Add the effect to the firework meta
+                            fireworkMeta.addEffect(effect);
+
+                            // Set the power of the firework (how high it will fly)
+                            fireworkMeta.setPower(0);
+
+                            // Apply the meta to the firework
+                            firework.setFireworkMeta(fireworkMeta);
+                            firework.detonate();
+
+                            s.getGame().getBord()[x-1][z].getArmorStand().remove();
+                            s.getGame().getBord()[x-1][z]=null;
+                        }
+
+                        s.getGame().getBord()[x][z]=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])];
+                        s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])]=null;
+
+
+
+                        s.getGame().setLastturn(x+":"+z+":"+s.getGame().getTurn().split(":")[1]+":"+s.getGame().getTurn().split(":")[2]);
+                        s.getGame().setTurn("netfinished");
+                        Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->{
+                            if(!s.hasGame())return;
+                            //promotion
+                            if(x==7 && s.getGame().getBord()[x][z].getClass().getSimpleName().equals("Bauer")){
+                                s.getGame().setTurn("promo:white:"+x+":"+z);
+                                s.getGame().createpromolist(p);
+                            } else s.getGame().setTurn("black");
+                        }, (long) (delay*(9*s.getTime())));
+
+                    } else {
+                        if(s.getGame().getBord()[x][z]!=null && s.getGame().getBord()[x][z].isWhite()){
+                            s.getGame().getBord()[x][z].getArmorStand().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));
+                            if(s.getGame().getTurn().split(":").length>1){
+                                s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().removePotionEffect(PotionEffectType.GLOWING);
+                            }
+                            s.getGame().setTurn(s.getGame().getTurn().split(":").length>1 && Integer.valueOf(s.getGame().getTurn().split(":")[1]).equals(x) && Integer.valueOf(s.getGame().getTurn().split(":")[2]).equals(z)
+                                    ? "white" : "white:"+x+":"+z);
+
+                            if(s.isHelp())utilitys.spawnhelp(s,x,z);
+
+                        }
+                    }
+                }
+                break;
+            case "black":
+                if(s.getGame().getSpieler2().equals(p)){
+                    int x = blocklock.getBlockX()-s.getFeltstart().getBlockX();
+                    int z = blocklock.getBlockZ()-s.getFeltstart().getBlockZ();
+                    if(x<0 || x>7 || z<0 || z>7)return;
+                    if(s.getGame().getTurn().split(":").length>1
+                            && (s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])]==null
+                            || !s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].isWhite())
+                            && utilitys.darferdas(s,Integer.valueOf(s.getGame().getTurn().split(":")[1]),Integer.valueOf(s.getGame().getTurn().split(":")[2]),x,z)){
+                        movefigure(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand(),s.getFeltstart().clone().add(x,0,z).clone().add(0.5,-1.9,0.5),s.getTime());
+                        s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().removePotionEffect(PotionEffectType.GLOWING);
+                        if(s.getGame().getBord()[x][z]!=null && s.getGame().getBord()[x][z].isWhite()!=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].isWhite()){
+                            ArmorStand ar1=s.getGame().getBord()[x][z].getArmorStand();
+                            ArmorStand ar2=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand();
+                            Boolean iswhite=s.getGame().getBord()[x][z].isWhite();
+                            new BukkitRunnable(){
+                                @Override
+                                public void run() {
+                                    if(ar1.getLocation().distance(
+                                            ar2.getLocation())<=0.3){
+                                        p.getWorld().playSound(ar1, Sound.ENTITY_ARMOR_STAND_BREAK,3,4);
+                                        // Create the firework entity at the specified location
+                                        Firework firework = (Firework) ar1.getWorld().spawnEntity(
+                                                ar1.getLocation(), EntityType.FIREWORK_ROCKET);
+
+                                        // Get the firework meta data
+                                        FireworkMeta fireworkMeta = firework.getFireworkMeta();
+
+                                        // Create a firework effect
+                                        FireworkEffect effect = FireworkEffect.builder()
+                                                .withColor(iswhite ? Color.WHITE : Color.BLACK)
+                                                .withFade(iswhite ? Color.WHITE : Color.BLACK)
+                                                .with(FireworkEffect.Type.BALL)
+                                                .trail(true)
+                                                .flicker(true)
+                                                .build();
+
+                                        // Add the effect to the firework meta
+                                        fireworkMeta.addEffect(effect);
+
+                                        // Set the power of the firework (how high it will fly)
+                                        fireworkMeta.setPower(0);
+
+                                        // Apply the meta to the firework
+                                        firework.setFireworkMeta(fireworkMeta);
+                                        firework.detonate();
+
+                                        if(ar1.getName().substring(2,ar1.getName().length()).equals("König"))s.getGame().gameend(iswhite ? "black" : "white");
+                                        ar1.remove();
+                                        cancel();
+                                    }
+                                }
+                            }.runTaskTimer(Monsterplugin.getPlugin(),0,10);
+                        }
+
+                        //hohade
+                        if(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Koenig")
+                                ||s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Turm")){
+                            if(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Koenig")){
+                                if(Integer.valueOf(s.getGame().getTurn().split(":")[2])+2==z){
+                                    movefigure(s.getGame().getBord()[7][7].getArmorStand(),s.getFeltstart().clone().add(7,0,5).clone().add(0.5,-1.9,0.5),s.getTime());
+                                    s.getGame().getBord()[7][5]=s.getGame().getBord()[7][7];
+                                    s.getGame().getBord()[7][7]=null;
+                                } else if(Integer.valueOf(s.getGame().getTurn().split(":")[2])-2==z){
+                                    movefigure(s.getGame().getBord()[7][0].getArmorStand(),s.getFeltstart().clone().add(7,0,3).clone().add(0.5,-1.9,0.5),s.getTime());
+                                    s.getGame().getBord()[7][3]=s.getGame().getBord()[7][0];
+                                    s.getGame().getBord()[7][0]=null;
+                                }
+                                s.getGame().setBlack_kingside(false);
+                                s.getGame().setBlack_queenside(false);
+                            } else {
+                                if(Integer.valueOf(s.getGame().getTurn().split(":")[1])==7 && Integer.valueOf(s.getGame().getTurn().split(":")[2])==7){
+                                    s.getGame().setBlack_kingside(false);
+                                } else if(Integer.valueOf(s.getGame().getTurn().split(":")[1])==7 && Integer.valueOf(s.getGame().getTurn().split(":")[2])==0){
+                                    s.getGame().setBlack_queenside(false);
+                                }
+                            }
+                        }
+
+                        double delay = s.getFeltstart().add(x,0,z).distance(
+                                s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().getLocation());
+
+                        //on passond
+                        if(s.getGame().getBord()[x][z]==null
+                                && s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Bauer")
+                                && z!=Integer.valueOf(s.getGame().getTurn().split(":")[2])){
+                            // Create the firework entity at the specified location
+                            Firework firework = (Firework) s.getGame().getBord()[x+1][z].getArmorStand().getWorld().spawnEntity(
+                                    s.getGame().getBord()[x+1][z].getArmorStand().getLocation(), EntityType.FIREWORK_ROCKET);
+
+                            // Get the firework meta data
+                            FireworkMeta fireworkMeta = firework.getFireworkMeta();
+
+                            // Create a firework effect
+                            FireworkEffect effect = FireworkEffect.builder()
+                                    .withColor(Color.WHITE)
+                                    .withFade(Color.WHITE)
+                                    .with(FireworkEffect.Type.STAR)
+                                    .trail(true)
+                                    .flicker(true)
+                                    .build();
+
+                            // Add the effect to the firework meta
+                            fireworkMeta.addEffect(effect);
+
+                            // Set the power of the firework (how high it will fly)
+                            fireworkMeta.setPower(0);
+
+                            // Apply the meta to the firework
+                            firework.setFireworkMeta(fireworkMeta);
+                            firework.detonate();
+
+                            s.getGame().getBord()[x+1][z].getArmorStand().remove();
+                            s.getGame().getBord()[x+1][z]=null;
+                        }
+
+                        s.getGame().getBord()[x][z]=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])];
+                        s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])]=null;
+
+                        s.getGame().setLastturn(x+":"+z+":"+s.getGame().getTurn().split(":")[1]+":"+s.getGame().getTurn().split(":")[2]);
+                        s.getGame().setTurn("netfinished");
+                        Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->{
+                            if(!s.hasGame())return;
+                            if(x==0 && s.getGame().getBord()[x][z].getClass().getSimpleName().equals("Bauer")){
+                                s.getGame().setTurn("promo:black:"+x+":"+z);
+                                s.getGame().createpromolist(p);
+                            } else s.getGame().setTurn("white");
+                        }, (long) (delay*(9*s.getTime())));
+                    } else {
+                        if(s.getGame().getBord()[x][z]!=null && !s.getGame().getBord()[x][z].isWhite()){
+                            s.getGame().getBord()[x][z].getArmorStand().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));
+                            if(s.getGame().getTurn().split(":").length>1){
+                                s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().removePotionEffect(PotionEffectType.GLOWING);
+                            }
+                            s.getGame().setTurn(s.getGame().getTurn().split(":").length>1 && Integer.valueOf(s.getGame().getTurn().split(":")[1]).equals(x) && Integer.valueOf(s.getGame().getTurn().split(":")[2]).equals(z)
+                                    ? "black" : "black:"+x+":"+z);
+
+                            if(s.isHelp())utilitys.spawnhelp(s,x,z);
+
+                        }
+                    }
+                }
+                break;
+            case "farbauswal":
+                int x = blocklock.getBlockX()-s.getFeltstart().getBlockX();
+                int z = blocklock.getBlockZ()-s.getFeltstart().getBlockZ();
+                if(x==3 || x==4 && z==3 || z==4){
+                    Player p1 = s.getGame().getSpieler1();
+                    Player p2 = s.getGame().getSpieler2();
+                    s.getGame().setSpieler1(z==3 ? p : p1.equals(p) ? p2 : p1);
+                    s.getGame().setSpieler2(z==4 ? p : p1.equals(p) ? p2 : p1);
+                    s.getGame().setTurn("white");
+                    ArmorStand ar1 = s.getGame().getBord()[0][0].getArmorStand();
+                    ArmorStand ar2 = s.getGame().getBord()[0][1].getArmorStand();
+
+                    utilitys.movefigure(ar1,ar1.getLocation().clone().add(0,-3,0),s.getTime());
+                    utilitys.movefigure(ar2,ar2.getLocation().clone().add(0,-3,0),s.getTime());
+                    Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> {
+                        ar1.remove();
+                        ar2.remove();
+                    },20*4);
+
+                    s.getGame().spawnbordside("white");
+                    s.getGame().spawnbordside("black");
+                }
+                break;
+            case "promo":
+                if(s.getGame().getTurn().split(":")[1].equals("white")){
+                    if(s.getGame().getSpieler1().equals(p)){
+                        int x1 = blocklock.getBlockX()-s.getFeltstart().getBlockX();
+                        int z1 = blocklock.getBlockZ()-s.getFeltstart().getBlockZ();
+                        if(x1==7 && z1>1 && z1<6){
+                            s.getGame().promote(x1,z1);
+                            s.getGame().setTurn("black");
+                        }
+                    }
+                } else {
+                    if(s.getGame().getSpieler2().equals(p)){
+                        int x1 = blocklock.getBlockX()-s.getFeltstart().getBlockX();
+                        int z1 = blocklock.getBlockZ()-s.getFeltstart().getBlockZ();
+                        if(x1==0 && z1>1 && z1<6){
+                            s.getGame().promote(x1,z1);
+                            s.getGame().setTurn("white");
+                        }
+                    }
+                }
+                break;
+        }
+
     }
 }

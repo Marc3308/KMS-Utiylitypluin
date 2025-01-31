@@ -39,7 +39,7 @@ class Bauer extends Figuren{
         helmet.setItemMeta(meta);
         ar.setHelmet(helmet);
 
-        movefigure(ar,loc.clone().add(0.5,-1.9,0.5));
+        movefigure(ar,loc.clone().add(0.5,-1.9,0.5),3);
     }
 
     @Override
@@ -73,7 +73,7 @@ class Turm extends Figuren{
         helmet.setItemMeta(meta);
         ar.setHelmet(helmet);
 
-        movefigure(ar,loc.clone().add(0.5,-1.9,0.5));
+        movefigure(ar,loc.clone().add(0.5,-1.9,0.5),3);
     }
 
     @Override
@@ -107,7 +107,7 @@ class Springer extends Figuren{
         helmet.setItemMeta(meta);
         ar.setHelmet(helmet);
 
-        movefigure(ar,loc.clone().add(0.5,-1.9,0.5));
+        movefigure(ar,loc.clone().add(0.5,-1.9,0.5),3);
     }
 
     @Override
@@ -141,7 +141,7 @@ class Laufer extends Figuren{
         helmet.setItemMeta(meta);
         ar.setHelmet(helmet);
 
-        movefigure(ar,loc.clone().add(0.5,-1.9,0.5));
+        movefigure(ar,loc.clone().add(0.5,-1.9,0.5),3);
     }
 
     @Override
@@ -175,7 +175,7 @@ class Dame extends Figuren{
         helmet.setItemMeta(meta);
         ar.setHelmet(helmet);
 
-        movefigure(ar,loc.clone().add(0.5,-1.9,0.5));
+        movefigure(ar,loc.clone().add(0.5,-1.9,0.5),3);
     }
 
     @Override
@@ -209,7 +209,7 @@ class Koenig extends Figuren{
         helmet.setItemMeta(meta);
         ar.setHelmet(helmet);
 
-        movefigure(ar,loc.clone().add(0.5,-1.9,0.5));
+        movefigure(ar,loc.clone().add(0.5,-1.9,0.5),3);
     }
 
     @Override
