@@ -136,7 +136,7 @@ public class chessevents implements Listener {
 
         Player p=e.getPlayer();
         if(e.getMessage().startsWith("/") || !(e.getMessage().length()!=2 || e.getMessage().length()!=5))return;
-        schachliste.stream().filter(s -> s.hasGame() && (s.getGame().getSpieler1().equals(p) || s.getGame().getSpieler2().equals(p))).findFirst().ifPresent(s -> {
+        schachliste.stream().filter(s -> s.hasGame() && (s.getGame().getSpieler1().equals(p) || (s.getGame().hasSpieler2() && s.getGame().getSpieler2().equals(p)))).findFirst().ifPresent(s -> {
             if(e.getMessage().equals("gg")){
                 s.getGame().gameend(s.getGame().getSpieler1().equals(p) ? "white" : "black");
                 return;
@@ -167,7 +167,6 @@ public class chessevents implements Listener {
         });
     }
 
-    //todo try if working
     @EventHandler
     public void oncommand(PlayerCommandPreprocessEvent e){
         Player p=e.getPlayer();

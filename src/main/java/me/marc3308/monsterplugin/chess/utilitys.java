@@ -580,15 +580,13 @@ public class utilitys {
                         s.getGame().getBord()[x][z]=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])];
                         s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])]=null;
 
-
-
                         s.getGame().setLastturn(x+":"+z+":"+s.getGame().getTurn().split(":")[1]+":"+s.getGame().getTurn().split(":")[2]);
                         s.getGame().setTurn("netfinished");
                         Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->{
                             if(!s.hasGame())return;
                             //promotion
                             if(x==7 && s.getGame().getBord()[x][z].getClass().getSimpleName().equals("Bauer")){
-                                s.getGame().setTurn("promo:white:"+x+":"+z);
+                                s.getGame().setTurn("netfinished:white:"+x+":"+z);
                                 s.getGame().createpromolist(p);
                             } else s.getGame().setTurn("black");
                         }, (long) (delay*(9*s.getTime())));
@@ -732,7 +730,7 @@ public class utilitys {
                         Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->{
                             if(!s.hasGame())return;
                             if(x==0 && s.getGame().getBord()[x][z].getClass().getSimpleName().equals("Bauer")){
-                                s.getGame().setTurn("promo:black:"+x+":"+z);
+                                s.getGame().setTurn("netfinished:black:"+x+":"+z);
                                 s.getGame().createpromolist(p);
                             } else s.getGame().setTurn("white");
                         }, (long) (delay*(9*s.getTime())));
@@ -781,7 +779,6 @@ public class utilitys {
                         int z1 = blocklock.getBlockZ()-s.getFeltstart().getBlockZ();
                         if(x1==7 && z1>1 && z1<6){
                             s.getGame().promote(x1,z1);
-                            s.getGame().setTurn("black");
                         }
                     }
                 } else {
@@ -790,7 +787,6 @@ public class utilitys {
                         int z1 = blocklock.getBlockZ()-s.getFeltstart().getBlockZ();
                         if(x1==0 && z1>1 && z1<6){
                             s.getGame().promote(x1,z1);
-                            s.getGame().setTurn("white");
                         }
                     }
                 }

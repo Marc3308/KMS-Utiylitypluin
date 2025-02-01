@@ -52,6 +52,7 @@ me\marc3308\monsterplugin\cosmetiks\subcommands\info.class
 me\marc3308\monsterplugin\chess\chesscommand.class
 me\marc3308\monsterplugin\cosmetiks\Cosmetikobjekt.class
 me\marc3308\monsterplugin\cosmetiks\comamndmenu$1.class
+me\marc3308\monsterplugin\cosmetiks\comamndmenu$2.class
 me\marc3308\monsterplugin\chess\objekts\Bauer.class
 me\marc3308\monsterplugin\chess\utilitys$1.class
 me\marc3308\monsterplugin\chess\objekts\Dame.class

@@ -17,6 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
+import static me.marc3308.monsterplugin.Monsterplugin.cosmetikslist;
+
 public class comamndmenu implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -36,36 +38,69 @@ public class comamndmenu implements CommandExecutor {
         for (int i=0;i<5;i++)Cosmetikmenu.setItem(8+(i*9),glass); //right side
         for (int i=45;i<54;i++)Cosmetikmenu.setItem(i,glass); //bot
 
+        Cosmetikmenu.setItem(13,itembuilder(p,"Kopf")); //kopf
+        Cosmetikmenu.setItem(22,itembuilder(p,"Körper")); //körper
+        Cosmetikmenu.setItem(31,itembuilder(p,"Beine")); //beine
+        Cosmetikmenu.setItem(40,itembuilder(p,"Füße")); //füße
 
-        boolean kopf=p.getPersistentDataContainer().has(new NamespacedKey(Monsterplugin.getPlugin(), "comichead"), PersistentDataType.INTEGER);
-
-        ItemStack head= new ItemStack(kopf ? Material.PAPER : Material.BARRIER);
-        ItemMeta headmeta = head.getItemMeta();
-        headmeta.setDisplayName("Kopf");
-        headmeta.setLore(new ArrayList<>(){{
-            add("Hier findest du deine");
-            add("Cosmetics für den Kopf");
-            add("");
-            add(ChatColor.YELLOW+"Linksklick zum Wechseln");
-        }});
-        if(kopf)headmeta.setCustomModelData(p.getPersistentDataContainer().get(new NamespacedKey(Monsterplugin.getPlugin(), "comichead"), PersistentDataType.INTEGER));
-        head.setItemMeta(headmeta);
-
-        ItemStack placeholder= new ItemStack(Material.BARRIER);
-        ItemMeta placeholdermeta = placeholder.getItemMeta();
-        placeholdermeta.setDisplayName(" ");
-        placeholder.setItemMeta(placeholdermeta);
-
-        Cosmetikmenu.setItem(13,head); //kopf
-        Cosmetikmenu.setItem(22,placeholder); //körper
-        Cosmetikmenu.setItem(31,placeholder); //beine
-        Cosmetikmenu.setItem(40,placeholder); //füße
-
-        Cosmetikmenu.setItem(29,placeholder); //mainhand
-        Cosmetikmenu.setItem(33,placeholder); //offhand
+        Cosmetikmenu.setItem(29,itembuilder(p,"???")); //mainhand
+        Cosmetikmenu.setItem(33,itembuilder(p,"Offhand")); //offhand
 
 
         p.openInventory(Cosmetikmenu);
         return false;
+    }
+
+    private ItemStack itembuilder(Player p, String sorter){
+        String custem ="testit";
+        switch (sorter){
+            case "Kopf":
+                custem="comichead";
+                break;
+            case "Körper":
+                custem="comicchest";
+                break;
+            case "Beine":
+                custem="comiclegs";
+                break;
+            case "Füße":
+                custem="comicfeet";
+                break;
+            case "Mainhand":
+                custem="commicmainhand";
+                break;
+            case "Offhand":
+                custem="comicoffhand";
+                break;
+        }
+
+        if(p.getPersistentDataContainer().has(new NamespacedKey(Monsterplugin.getPlugin(), custem), PersistentDataType.INTEGER)){
+            for (Cosmetikobjekt c : cosmetikslist) {
+                if (p.getPersistentDataContainer().get(new NamespacedKey(Monsterplugin.getPlugin(), custem), PersistentDataType.INTEGER).equals(c.getCustommodeldata()) && c.getKörperteil().equals(sorter)) {
+                    ItemStack head = new ItemStack(Material.valueOf(c.getMaterial()));
+                    ItemMeta headmeta = head.getItemMeta();
+                    headmeta.setDisplayName(sorter + " [" + c.getName() + "]");
+                    headmeta.setLore(new ArrayList<>() {{
+                        add("Hier findest du deine " + sorter + "-Cosmetics");
+                        add("");
+                        add(ChatColor.YELLOW + "Linksklick zum Wechseln");
+                    }});
+                    headmeta.setCustomModelData(p.getPersistentDataContainer().get(new NamespacedKey(Monsterplugin.getPlugin(), custem), PersistentDataType.INTEGER));
+                    head.setItemMeta(headmeta);
+                    return head;
+                }
+            }
+        }
+
+        ItemStack placeholder= new ItemStack(Material.BARRIER);
+        ItemMeta placeholdermeta = placeholder.getItemMeta();
+        placeholdermeta.setDisplayName(sorter);
+        placeholdermeta.setLore(new ArrayList<>() {{
+            add("Hier findest du deine " + sorter + "-Cosmetics");
+            add("");
+            add(ChatColor.YELLOW + "Linksklick zum Wechseln");
+        }});
+        placeholder.setItemMeta(placeholdermeta);
+        return placeholder;
     }
 }

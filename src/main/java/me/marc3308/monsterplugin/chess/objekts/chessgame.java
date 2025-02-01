@@ -249,22 +249,20 @@ public class chessgame {
 
                     // Auto update logic
                     p.sendMessage(ChatColor.DARK_GREEN + ("------Spielstand------"));
-                    for (int i = (schwarzeseite ? 0 : 7);
-                         schwarzeseite ? i < 8 : i >= 0;
-                         i = schwarzeseite ? i + 1 : i - 1) {
+                    if(getTurn().contains("promo")
+                            && !promolist.isEmpty()
+                            && promolist.size()==4
+                            && ((p.equals(spieler1) && getTurn().split(":")[1].equals("white")) || (p.equals(spieler2) && getTurn().split(":")[1].equals("black")))){
 
-                        Component row = Component.text("[" + (i + 1) + "]").color(NamedTextColor.DARK_GREEN); // Row label
+                        Component row = Component.text("[" + (getTurn().split(":")[1].equals("white") ? 8 : 1) + "]").color(NamedTextColor.DARK_GREEN); // Row label
+                        int j = (getTurn().split(":")[1].equals("white") ? 7 : 0);
+                        for (int i = (!schwarzeseite ? 0 : 7);
+                             !schwarzeseite ? i < 8 : i >= 0;
+                             i = !schwarzeseite ? i + 1 : i - 1){
 
-                        for (int j = (!schwarzeseite ? 0 : 7);
-                             !schwarzeseite ? j < 8 : j >= 0;
-                             j = !schwarzeseite ? j + 1 : j - 1) {
-
-                            // Determine board cell color
-                            ChatColor squareColor = s.getGame().getTurn().split(":").length>1 && darferdas(chessbord,Integer.valueOf(s.getGame().getTurn().split(":")[1]),Integer.valueOf(s.getGame().getTurn().split(":")[2]),i,j)
-                                    ? s.getGame().getBord()[i][j] != null ? ChatColor.RED : ChatColor.GREEN : (i == 0 && j == 0) || (i + j) % 2 == 0 ? ChatColor.DARK_GRAY : ChatColor.WHITE;
-
-                            // Default empty cell component
-                            String columnLetter = switch (j) {
+                            ChatColor squareColor = (i == 0 && j == 0) || (i + j) % 2 == 0 ? ChatColor.DARK_GRAY : ChatColor.WHITE;
+                            String name = i>1 && i<6 ? promolist.get(i-2).getArmorStand().getName().substring(0, 3) : "_";
+                            String columnLetter = switch (i) {
                                 case 0 -> "A";
                                 case 1 -> "B";
                                 case 2 -> "C";
@@ -275,38 +273,80 @@ public class chessgame {
                                 default -> "H";
                             };
 
-                            String name ="";
-                            String hover="";
-                            String command = columnLetter + (i+1);
-                            Component boardCell;
-
-                            if (s.getGame().getBord()[i][j] != null) {
-                                String pieceName = s.getGame().getBord()[i][j].getArmorStand().getName().substring(2, 3);
-                                ChatColor pieceColor = s.getGame().getTurn().split(":").length>1
-                                        && Integer.valueOf(s.getGame().getTurn().split(":")[1])==i
-                                        && Integer.valueOf(s.getGame().getTurn().split(":")[2])==j ? ChatColor.GOLD : s.getGame().getBord()[i][j].isWhite() ? ChatColor.WHITE : ChatColor.DARK_GRAY;
-
-                                name=squareColor+"[" +pieceColor + pieceName + squareColor +"]";
-                                hover=command+s.getGame().getBord()[i][j].getArmorStand().getName().substring(0, 2)+" ["+s.getGame().getBord()[i][j].getArmorStand().getName().substring(2)+"]";
-                                boardCell = Component.text(name)
-                                        .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,"/cpe "+command))
-                                        .hoverEvent(HoverEvent.showText(Component.text(hover)));
-                            } else {
-                                name=squareColor+"[_]";
-                                hover=command;
-                                boardCell = Component.text(name)
-                                        .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,"/cpe "+command))
-                                        .hoverEvent(HoverEvent.showText(Component.text(hover)));
-                            }
-                            Component normalcell = Component.text(name)
-                                    .hoverEvent(HoverEvent.showText(Component.text(hover)));
-                            row = row.append(!p.equals(spieler1) && !p.equals(spieler2) ? normalcell : boardCell);
+                            Component boardCell = Component.text(squareColor+"["+name+squareColor+"]")
+                                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/cpe " + columnLetter + (j+1)))
+                                    .hoverEvent(HoverEvent.showText(Component.text(columnLetter + (j+1) + (name.equals("_")
+                                            ? "" : " "+promolist.get(i-2).getArmorStand().getName().substring(0, 2) + " [" + promolist.get(i-2).getArmorStand().getName().substring(2) + "]"))));
+                            row = row.append(boardCell);
                         }
 
-                        // Send the row component to the player
                         p.sendMessage(row);
-                    }
 
+                    } else {
+                        for (int i = (schwarzeseite ? 0 : 7);
+                             schwarzeseite ? i < 8 : i >= 0;
+                             i = schwarzeseite ? i + 1 : i - 1) {
+
+                            Component row = Component.text("[" + (i + 1) + "]").color(NamedTextColor.DARK_GREEN); // Row label
+
+                            for (int j = (!schwarzeseite ? 0 : 7);
+                                 !schwarzeseite ? j < 8 : j >= 0;
+                                 j = !schwarzeseite ? j + 1 : j - 1) {
+
+                                // Determine board cell color
+                                ChatColor squareColor = s.getGame().getTurn().split(":").length > 1
+                                        && !s.getGame().getTurn().split(":")[0].equals("promo")
+                                        && !s.getGame().getTurn().split(":")[0].equals("netfinished")
+                                        && darferdas(chessbord, Integer.valueOf(s.getGame().getTurn().split(":")[1]), Integer.valueOf(s.getGame().getTurn().split(":")[2]), i, j)
+                                        ? s.getGame().getBord()[i][j] != null ? ChatColor.RED : ChatColor.GREEN : (i == 0 && j == 0) || (i + j) % 2 == 0 ? ChatColor.DARK_GRAY : ChatColor.WHITE;
+
+                                // Default empty cell component
+                                String columnLetter = switch (j) {
+                                    case 0 -> "A";
+                                    case 1 -> "B";
+                                    case 2 -> "C";
+                                    case 3 -> "D";
+                                    case 4 -> "E";
+                                    case 5 -> "F";
+                                    case 6 -> "G";
+                                    default -> "H";
+                                };
+
+                                String name = "";
+                                String hover = "";
+                                String command = columnLetter + (i + 1);
+                                Component boardCell;
+
+                                if (s.getGame().getBord()[i][j] != null) {
+                                    String pieceName = s.getGame().getBord()[i][j].getArmorStand().getName().substring(2, 3);
+                                    ChatColor pieceColor = s.getGame().getTurn().split(":").length > 1
+                                            && !s.getGame().getTurn().split(":")[0].equals("promo")
+                                            && !s.getGame().getTurn().split(":")[0].equals("netfinished")
+                                            && Integer.valueOf(s.getGame().getTurn().split(":")[1]) == i
+                                            && Integer.valueOf(s.getGame().getTurn().split(":")[2]) == j ? ChatColor.GOLD : s.getGame().getBord()[i][j].isWhite() ? ChatColor.WHITE : ChatColor.DARK_GRAY;
+
+                                    name = squareColor + "[" + pieceColor + pieceName + squareColor + "]";
+                                    hover = command + s.getGame().getBord()[i][j].getArmorStand().getName().substring(0, 2) + " [" + s.getGame().getBord()[i][j].getArmorStand().getName().substring(2) + "]";
+                                    boardCell = Component.text(name)
+                                            .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/cpe " + command))
+                                            .hoverEvent(HoverEvent.showText(Component.text(hover)));
+                                } else {
+                                    name = squareColor + "[_]";
+                                    hover = command;
+                                    boardCell = Component.text(name)
+                                            .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/cpe " + command))
+                                            .hoverEvent(HoverEvent.showText(Component.text(hover)));
+                                }
+                                Component normalcell = Component.text(name)
+                                        .hoverEvent(HoverEvent.showText(Component.text(hover)));
+                                row = row.append(!p.equals(spieler1) && !p.equals(spieler2)
+                                        && ((p.equals(spieler1) && getTurn().split(":")[0].equals("white")) || (p.equals(spieler2) && getTurn().split(":")[0].equals("black"))) ? normalcell : boardCell);
+                            }
+
+                            // Send the row component to the player
+                            p.sendMessage(row);
+                        }
+                    }
                     p.sendMessage(Component.text(schwarzeseite ? "[X][H][G][F][E][D][C][B][A]" : "[X][A][B][C][D][E][F][G][H]")
                             .color(NamedTextColor.DARK_GREEN));
                 }
@@ -326,6 +366,10 @@ public class chessgame {
 
     public void gameend(String winner){
         gamehasstarted=false;
+        promolist.forEach(f -> {
+            movefigure(f.getArmorStand(), f.getArmorStand().getLocation().clone().add(0,-3,0),3);
+            Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> f.getArmorStand().remove(),20*4);
+        });
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if(bord[i][j]==null)continue;
@@ -338,7 +382,7 @@ public class chessgame {
                     Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->{
                         // Create the firework entity at the specified location
                         Firework firework = (Firework) chessbord.getFeltstart().getWorld().spawnEntity(
-                                 chessbord.getFeltstart().add((winner.equals("white") ? 0 : 7) - finalI,0,finalJ), EntityType.FIREWORK_ROCKET);
+                                 chessbord.getFeltstart().add(winner.equals("white") ? finalI : 7-finalI ,4,finalJ), EntityType.FIREWORK_ROCKET);
 
                         // Get the firework meta data
                         FireworkMeta fireworkMeta = firework.getFireworkMeta();
@@ -356,7 +400,7 @@ public class chessgame {
                         fireworkMeta.addEffect(effect);
 
                         // Set the power of the firework (how high it will fly)
-                        fireworkMeta.setPower(3);
+                        fireworkMeta.setPower(0);
 
                         // Apply the meta to the firework
                         firework.setFireworkMeta(fireworkMeta);
@@ -407,29 +451,34 @@ public class chessgame {
         bord[Integer.valueOf(lastturn.split(":")[0])][Integer.valueOf(lastturn.split(":")[1])].getArmorStand().remove();
         bord[Integer.valueOf(lastturn.split(":")[0])][Integer.valueOf(lastturn.split(":")[1])] = promolist.get(z-2);
         promolist.remove(z-2);
-        Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->moveall(2),20);
-        promolist.forEach(f -> f.getArmorStand().remove());
-        promolist.clear();
+        promolist.forEach(f -> movefigure(f.getArmorStand(), f.getArmorStand().getLocation().clone().add(0,-2,0),3));
+        Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->{
+            moveall(2);
+            promolist.forEach(f -> f.getArmorStand().remove());
+            promolist.clear();
+        },20);
+        Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> setTurn(getTurn().split(":")[1].equals("white") ? "black" : "white"),20*3);
     }
 
     public void createpromolist(Player p){
         int modeldata=spieler1.getPersistentDataContainer().has(new NamespacedKey(Monsterplugin.getPlugin(),"chessskin"))
                 ? spieler1.getPersistentDataContainer().get(new NamespacedKey(Monsterplugin.getPlugin(),"chessskin"), PersistentDataType.INTEGER)
                 : 10000;
-        moveall(-2);
+        Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> moveall(-2),20);
         promolist.forEach(f -> f.getArmorStand().remove());
         promolist.clear();
         promolist.add(new Turm(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,2), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+2 : modeldata+12,getTurn().split(":")[1].equals("white")));
         promolist.add(new Springer(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,3), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+3 : modeldata+13,getTurn().split(":")[1].equals("white")));
         promolist.add(new Laufer(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,4), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+4 : modeldata+14,getTurn().split(":")[1].equals("white")));
         promolist.add(new Dame(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,5), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+5 : modeldata+15,getTurn().split(":")[1].equals("white")));
+        Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->setTurn("promo:"+getTurn().split(":")[1]+":"+getTurn().split(":")[2]+":"+getTurn().split(":")[3]),20*4);
     }
 
     public void moveall(double y){
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if(bord[i][j]==null)continue;
-                movefigure(bord[i][j].getArmorStand(),bord[i][j].getArmorStand().getLocation().clone().add(0,y,0),3);
+                movefigure(bord[i][j].getArmorStand(),bord[i][j].getArmorStand().getLocation().clone().add(0,y,0), 3);
             }
         }
     }

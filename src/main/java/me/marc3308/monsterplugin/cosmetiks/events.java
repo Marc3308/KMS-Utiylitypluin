@@ -35,23 +35,40 @@ public class events implements Listener {
         Player p = (Player) e.getWhoClicked();
 
         //update inv
-        if(e.getSlotType().equals(InventoryType.SlotType.ARMOR))Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> sendFakeArmor(p,p), 1L);
+        if(e.getSlotType().equals(InventoryType.SlotType.ARMOR) ||e.getSlotType().equals(InventoryType.SlotType.QUICKBAR)){
+            p.updateInventory();
+            sendpack(p);
+        }
 
 
         //cosmikinf
         if(e.getView().getTitle().equalsIgnoreCase("§lCosmetic-Menü")) {
             e.setCancelled(true);
             if (e.getCurrentItem() == null) return;
-            switch (e.getCurrentItem().getItemMeta().getDisplayName()){
-                case "Kopf":
+            switch (e.getSlot()){
+                case 13:
                     opencosmikmenu2(p,"Kopf",1);
+                    break;
+                case 22:
+                    opencosmikmenu2(p,"Körper",1);
+                    break;
+                case 31:
+                    opencosmikmenu2(p,"Beine",1);
+                    break;
+                case 40:
+                    opencosmikmenu2(p,"Füße",1);
+                    break;
+                case 29:
+                    //opencosmikmenu2(p,"Mainhand",1);
+                    break;
+                case 33:
+                    opencosmikmenu2(p,"Offhand",1);
                     break;
             }
             return;
         }
 
-        //todo ersetzen dass alle anwehlen kannst
-        if(e.getView().getTitle().equalsIgnoreCase("§lCosmetic-Menü > "+"Kopf")) {
+        if(e.getView().getTitle().split(" >")[0].equalsIgnoreCase("§lCosmetic-Menü")) {
             e.setCancelled(true);
             if (e.getCurrentItem() == null) return;
             String sorter = " ";
@@ -121,6 +138,9 @@ public class events implements Listener {
     public void onjoin(PlayerJoinEvent e){
         Player p = e.getPlayer();
         sendpack(p);
+        for (Player other : Bukkit.getOnlinePlayers()){
+            Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> sendFakeArmor(p,other), 1L);
+        }
     }
 
     private void sendpack(Player p){
@@ -161,8 +181,32 @@ public class events implements Listener {
 
     private ItemStack builder(Player p,ItemStack oldstack, String sorter){
         if(!p.getPersistentDataContainer().has(new NamespacedKey(Monsterplugin.getPlugin(), sorter), PersistentDataType.INTEGER))return oldstack;
+        String custem ="testit";
+        switch (sorter){
+            case "comichead":
+                custem="Kopf";
+                break;
+            case "comicchest":
+                custem="Körper";
+                break;
+            case "comiclegs":
+                custem="Beine";
+                break;
+            case "comicfeet":
+                custem="Füße";
+                break;
+            case "commicmainhand":
+                custem="Mainhand";
+                break;
+            case "comicoffhand":
+                custem="Offhand";
+                break;
+        }
         for (Cosmetikobjekt c : cosmetikslist){
-            if(c.getCustommodeldata()==p.getPersistentDataContainer().get(new NamespacedKey(Monsterplugin.getPlugin(), sorter), PersistentDataType.INTEGER)){
+            if(c.getCustommodeldata()==p.getPersistentDataContainer().get(new NamespacedKey(Monsterplugin.getPlugin(), sorter), PersistentDataType.INTEGER) && c.getKörperteil().equals(custem)){
+                if(c.getBedingung()!=null
+                        && !p.getPersistentDataContainer().has(new NamespacedKey(Monsterplugin.getPlugin(), c.getBedingung()), PersistentDataType.BOOLEAN)
+                        && !c.getBedingung().equals(p.getPersistentDataContainer().get(new NamespacedKey("rassensystem","rasse"), PersistentDataType.STRING)))return oldstack;
                 ItemStack newstack = new ItemStack(Material.valueOf(c.getMaterial()));
                 ItemMeta meta = newstack.getItemMeta();
                 meta.setDisplayName(c.getName());
