@@ -1,14 +1,14 @@
 package me.marc3308.monsterplugin;
 
-import me.marc3308.monsterplugin.chess.chesscommand;
-import me.marc3308.monsterplugin.chess.chessevents;
-import me.marc3308.monsterplugin.chess.utilitys;
+import me.marc3308.monsterplugin.spiele.chess.chessevents;
+import me.marc3308.monsterplugin.spiele.chess.chessutilitys;
 import me.marc3308.monsterplugin.commands.*;
 import me.marc3308.monsterplugin.cosmetiks.Commandmanager;
 import me.marc3308.monsterplugin.cosmetiks.Cosmetikobjekt;
 import me.marc3308.monsterplugin.cosmetiks.comamndmenu;
 import me.marc3308.monsterplugin.cosmetiks.events;
 import me.marc3308.monsterplugin.eventlistener.*;
+import me.marc3308.monsterplugin.spiele.spielecommandmanager;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -140,13 +140,13 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         getCommand("spielerinfo").setExecutor(new playerlog());
         getCommand("cosmetic").setExecutor(new comamndmenu());
         getCommand("cosmetics").setExecutor(new Commandmanager());
-        getCommand("chess").setExecutor(new chesscommand());
+        getCommand("spiele").setExecutor(new spielecommandmanager());
         //getCommand("delwol").setExecutor(new delet());
 
 
         //load cosmetiks
         Cosmetikobjekt.loadlist();
-        utilitys.loadbords();
+        chessutilitys.loadbords();
 
         if(eiss.get("orgen")==null){
 
@@ -237,10 +237,10 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
             i.printStackTrace();
         }
         Cosmetikobjekt.savecosmis();
-        utilitys.savebords();
+        chessutilitys.savebords();
         Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED+"Shit is Saved");
 
-        utilitys.schachliste.stream().filter(s -> s.hasGame() && s.getGame().isGamehasstarted()).forEach(s -> s.setGame(null));
+        chessutilitys.schachliste.stream().filter(s -> s.hasGame() && s.getGame().isGamehasstarted()).forEach(s -> s.setGame(null));
     }
 
 }

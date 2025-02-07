@@ -43,7 +43,7 @@ public class comamndmenu implements CommandExecutor {
         Cosmetikmenu.setItem(31,itembuilder(p,"Beine")); //beine
         Cosmetikmenu.setItem(40,itembuilder(p,"Füße")); //füße
 
-        Cosmetikmenu.setItem(29,itembuilder(p,"???")); //mainhand
+        Cosmetikmenu.setItem(29,itembuilder(p,"Mainhand")); //mainhand
         Cosmetikmenu.setItem(33,itembuilder(p,"Offhand")); //offhand
 
 

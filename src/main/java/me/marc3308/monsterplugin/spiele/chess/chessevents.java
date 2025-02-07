@@ -1,4 +1,4 @@
-package me.marc3308.monsterplugin.chess;
+package me.marc3308.monsterplugin.spiele.chess;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import static me.marc3308.monsterplugin.chess.utilitys.*;
+import static me.marc3308.monsterplugin.spiele.chess.chessutilitys.*;
 
 public class chessevents implements Listener {
 

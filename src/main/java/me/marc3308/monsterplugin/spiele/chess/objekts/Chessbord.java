@@ -1,4 +1,4 @@
-package me.marc3308.monsterplugin.chess.objekts;
+package me.marc3308.monsterplugin.spiele.chess.objekts;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

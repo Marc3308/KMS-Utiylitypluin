@@ -1,7 +1,7 @@
-package me.marc3308.monsterplugin.chess;
+package me.marc3308.monsterplugin.spiele.chess;
 
 import me.marc3308.monsterplugin.Monsterplugin;
-import me.marc3308.monsterplugin.chess.objekts.Chessbord;
+import me.marc3308.monsterplugin.spiele.chess.objekts.Chessbord;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class utilitys {
+public class chessutilitys {
 
     public static ArrayList<Chessbord> schachliste = new ArrayList<>();
 
@@ -467,7 +467,7 @@ public class utilitys {
                     if(s.getGame().getTurn().split(":").length>1
                             && (s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])]==null
                             || s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].isWhite())
-                            && utilitys.darferdas(s,Integer.valueOf(s.getGame().getTurn().split(":")[1]),Integer.valueOf(s.getGame().getTurn().split(":")[2]),x,z)){
+                            && chessutilitys.darferdas(s,Integer.valueOf(s.getGame().getTurn().split(":")[1]),Integer.valueOf(s.getGame().getTurn().split(":")[2]),x,z)){
 
                         movefigure(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand(),s.getFeltstart().clone().add(x,0,z).clone().add(0.5,-1.9,0.5),s.getTime());
                         s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().removePotionEffect(PotionEffectType.GLOWING);
@@ -600,7 +600,7 @@ public class utilitys {
                             s.getGame().setTurn(s.getGame().getTurn().split(":").length>1 && Integer.valueOf(s.getGame().getTurn().split(":")[1]).equals(x) && Integer.valueOf(s.getGame().getTurn().split(":")[2]).equals(z)
                                     ? "white" : "white:"+x+":"+z);
 
-                            if(s.isHelp())utilitys.spawnhelp(s,x,z);
+                            if(s.isHelp()) chessutilitys.spawnhelp(s,x,z);
 
                         }
                     }
@@ -614,7 +614,7 @@ public class utilitys {
                     if(s.getGame().getTurn().split(":").length>1
                             && (s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])]==null
                             || !s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].isWhite())
-                            && utilitys.darferdas(s,Integer.valueOf(s.getGame().getTurn().split(":")[1]),Integer.valueOf(s.getGame().getTurn().split(":")[2]),x,z)){
+                            && chessutilitys.darferdas(s,Integer.valueOf(s.getGame().getTurn().split(":")[1]),Integer.valueOf(s.getGame().getTurn().split(":")[2]),x,z)){
                         movefigure(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand(),s.getFeltstart().clone().add(x,0,z).clone().add(0.5,-1.9,0.5),s.getTime());
                         s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().removePotionEffect(PotionEffectType.GLOWING);
                         if(s.getGame().getBord()[x][z]!=null && s.getGame().getBord()[x][z].isWhite()!=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].isWhite()){
@@ -743,7 +743,7 @@ public class utilitys {
                             s.getGame().setTurn(s.getGame().getTurn().split(":").length>1 && Integer.valueOf(s.getGame().getTurn().split(":")[1]).equals(x) && Integer.valueOf(s.getGame().getTurn().split(":")[2]).equals(z)
                                     ? "black" : "black:"+x+":"+z);
 
-                            if(s.isHelp())utilitys.spawnhelp(s,x,z);
+                            if(s.isHelp()) chessutilitys.spawnhelp(s,x,z);
 
                         }
                     }
@@ -761,8 +761,8 @@ public class utilitys {
                     ArmorStand ar1 = s.getGame().getBord()[0][0].getArmorStand();
                     ArmorStand ar2 = s.getGame().getBord()[0][1].getArmorStand();
 
-                    utilitys.movefigure(ar1,ar1.getLocation().clone().add(0,-3,0),s.getTime());
-                    utilitys.movefigure(ar2,ar2.getLocation().clone().add(0,-3,0),s.getTime());
+                    chessutilitys.movefigure(ar1,ar1.getLocation().clone().add(0,-3,0),s.getTime());
+                    chessutilitys.movefigure(ar2,ar2.getLocation().clone().add(0,-3,0),s.getTime());
                     Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> {
                         ar1.remove();
                         ar2.remove();

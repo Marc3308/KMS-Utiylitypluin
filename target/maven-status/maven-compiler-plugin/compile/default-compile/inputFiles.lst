@@ -1,9 +1,3 @@
-C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\chess\chesscommand.java
-C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\chess\chessevents.java
-C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\chess\objekts\Chessbord.java
-C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\chess\objekts\chessgame.java
-C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\chess\objekts\Figuren.java
-C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\chess\utilitys.java
 C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\commands\delet.java
 C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\commands\info.java
 C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\commands\loadit.java
@@ -35,3 +29,12 @@ C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\
 C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\eventlistener\spawnerdelete.java
 C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\eventlistener\spiderspawn.java
 C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\Monsterplugin.java
+C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\spiele\chess\chessevents.java
+C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\spiele\chess\chessutilitys.java
+C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\spiele\chess\objekts\Chessbord.java
+C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\spiele\chess\objekts\chessgame.java
+C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\spiele\chess\objekts\Figuren.java
+C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\spiele\spielecommandmanager.java
+C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\spiele\tiktaktoe\objekte\Figuren.java
+C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\spiele\tiktaktoe\objekte\tiktakbord.java
+C:\Users\kai\OneDrive\Programieren\java\platzhalter\Monsterplugin\src\main\java\me\marc3308\monsterplugin\spiele\tiktaktoe\tiktakutility.java

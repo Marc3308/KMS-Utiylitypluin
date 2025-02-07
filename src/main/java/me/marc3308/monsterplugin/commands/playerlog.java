@@ -361,9 +361,11 @@ public class playerlog implements CommandExecutor{
                     ,PersistentDataType.STRING)) {
                 int finalI = i;
                 glass_meta.setLore(new ArrayList<>(){{
-                    add("Ausgelogt: "+of.getPersistentDataContainer().get(new NamespacedKey(plugin
+                    add((LocalDate.now(ZoneId.of("Europe/Berlin")).format(dateFormat).equals(monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)) && of.isOnline()
+                            ? "Position: X:"+of.getLocation().getBlockX()+" Y:"+of.getLocation().getBlockY()+" Z:"+of.getLocation().getBlockZ()
+                            : "Ausgelogt: " + of.getPersistentDataContainer().get(new NamespacedKey(plugin
                                     ,monday.with(TemporalAdjusters.nextOrSame(DayOfWeek.values()[finalI])).format(dateFormat)+"auslog")
-                                    ,PersistentDataType.STRING));
+                                    ,PersistentDataType.STRING)));
                     add("");
                     add(ChatColor.YELLOW+"Linksklick zum Teleportieren");
         }});

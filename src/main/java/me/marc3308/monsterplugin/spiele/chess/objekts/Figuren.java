@@ -1,4 +1,4 @@
-package me.marc3308.monsterplugin.chess.objekts;
+package me.marc3308.monsterplugin.spiele.chess.objekts;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -7,7 +7,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import static me.marc3308.monsterplugin.chess.utilitys.movefigure;
+import static me.marc3308.monsterplugin.spiele.chess.chessutilitys.movefigure;
 
 public abstract class Figuren {
 

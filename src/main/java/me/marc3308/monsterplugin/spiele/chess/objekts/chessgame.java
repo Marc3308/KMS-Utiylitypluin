@@ -1,11 +1,10 @@
-package me.marc3308.monsterplugin.chess.objekts;
+package me.marc3308.monsterplugin.spiele.chess.objekts;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import me.marc3308.monsterplugin.Monsterplugin;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -22,8 +21,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import static me.marc3308.monsterplugin.chess.utilitys.darferdas;
-import static me.marc3308.monsterplugin.chess.utilitys.movefigure;
+import static me.marc3308.monsterplugin.spiele.chess.chessutilitys.darferdas;
+import static me.marc3308.monsterplugin.spiele.chess.chessutilitys.movefigure;
 
 public class chessgame {
     private Chessbord chessbord;

@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
@@ -35,8 +36,7 @@ public class events implements Listener {
         Player p = (Player) e.getWhoClicked();
 
         //update inv
-        if(e.getSlotType().equals(InventoryType.SlotType.ARMOR) ||e.getSlotType().equals(InventoryType.SlotType.QUICKBAR)){
-            p.updateInventory();
+        if(e.getSlotType().equals(InventoryType.SlotType.ARMOR) || (e.getSlotType().equals(InventoryType.SlotType.QUICKBAR) && e.getSlot() == 40)){
             sendpack(p);
         }
 
@@ -59,7 +59,7 @@ public class events implements Listener {
                     opencosmikmenu2(p,"Füße",1);
                     break;
                 case 29:
-                    //opencosmikmenu2(p,"Mainhand",1);
+                    opencosmikmenu2(p,"Mainhand",1);
                     break;
                 case 33:
                     opencosmikmenu2(p,"Offhand",1);
@@ -143,6 +143,15 @@ public class events implements Listener {
         }
     }
 
+    @EventHandler
+    public void onswitch(PlayerItemHeldEvent e){
+        Player p = e.getPlayer();
+        if(e.getPlayer().getInventory().getItem(e.getNewSlot())==null && p.getPersistentDataContainer().has(new NamespacedKey(Monsterplugin.getPlugin(), "commicmainhand"), PersistentDataType.INTEGER)){
+            p.updateInventory();
+            Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> sendpack(p), 3L);
+        }
+    }
+
     private void sendpack(Player p){
         for (Player other : Bukkit.getOnlinePlayers()){
             Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> sendFakeArmor(other,p), 1L);
@@ -166,8 +175,9 @@ public class events implements Listener {
             equipment.add(new Pair<>(EnumWrappers.ItemSlot.LEGS, builder(target,target.getInventory().getLeggings(), "comiclegs")));
             equipment.add(new Pair<>(EnumWrappers.ItemSlot.FEET, builder(target,target.getInventory().getBoots(), "comicfeet")));
             //testthis
-            equipment.add(new Pair<>(EnumWrappers.ItemSlot.MAINHAND, builder(target,target.getInventory().getItemInMainHand(), "commicmainhand")));
-            equipment.add(new Pair<>(EnumWrappers.ItemSlot.OFFHAND, builder(target,target.getInventory().getItemInOffHand(), "comicoffhand")));
+            if(target.getInventory().getItemInOffHand().getType().equals(Material.AIR))equipment.add(new Pair<>(EnumWrappers.ItemSlot.OFFHAND, builder(target,target.getInventory().getItemInOffHand(), "comicoffhand")));
+            if(target.getInventory().getItemInMainHand().getType().equals(Material.AIR))equipment.add(new Pair<>(EnumWrappers.ItemSlot.MAINHAND, builder(target,target.getInventory().getItemInMainHand(), "commicmainhand")));
+
 
             // Write the fake armor to the packet
             packet.getSlotStackPairLists().write(0, equipment);
