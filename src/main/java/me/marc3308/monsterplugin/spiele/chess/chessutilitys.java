@@ -1,5 +1,7 @@
 package me.marc3308.monsterplugin.spiele.chess;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import me.marc3308.monsterplugin.Monsterplugin;
 import me.marc3308.monsterplugin.spiele.chess.objekts.Chessbord;
 import org.bukkit.*;
@@ -12,6 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -19,6 +23,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.UUID;
+
+import static org.bukkit.Bukkit.getServer;
 
 public class chessutilitys {
 
@@ -55,7 +63,7 @@ public class chessutilitys {
         switch (s.getGame().getBord()[x1][z1].getClass().getSimpleName()){
             case "Bauer":
                 if(s.getGame().getBord()[x1][z1].isWhite()){
-                    if(s.getGame().getBord()[x2][z2]==null && (x1+1==x2 || (x1+2==x2 && x1==1 && s.getGame().getBord()[x2+1][z2]==null)) && z1==z2)return true;
+                    if(s.getGame().getBord()[x2][z2]==null && (x1+1==x2 || (x1+2==x2 && x1==1 && s.getGame().getBord()[x1+1][z2]==null)) && z1==z2)return true;
                     if(s.getGame().getBord()[x2][z2]!=null && !s.getGame().getBord()[x2][z2].isWhite() && x1+1==x2 && (z1+1==z2 || z1-1==z2))return true;
 
                     if(s.getGame().getLastturn()!=null && s.getGame().getBord()[x2][z2]==null && x2==5 && (z2+1==z1 || z2-1==z1) && x1==4
@@ -64,7 +72,7 @@ public class chessutilitys {
                             && s.getGame().getBord()[Integer.valueOf(s.getGame().getLastturn().split(":")[0])][Integer.valueOf(s.getGame().getLastturn().split(":")[1])].getClass().getSimpleName().equals("Bauer")
                             && Integer.valueOf(s.getGame().getLastturn().split(":")[2])-2==4)return true;
                 } else {
-                    if(s.getGame().getBord()[x2][z2]==null && (x1-1==x2 || (x1-2==x2 && x1==6 && s.getGame().getBord()[x2-1][z2]==null)) && z1==z2)return true;
+                    if(s.getGame().getBord()[x2][z2]==null && (x1-1==x2 || (x1-2==x2 && x1==6 && s.getGame().getBord()[x1-1][z2]==null)) && z1==z2)return true;
                     if(s.getGame().getBord()[x2][z2]!=null && s.getGame().getBord()[x2][z2].isWhite() && x1-1==x2 && (z1+1==z2 || z1-1==z2))return true;
                     if(s.getGame().getLastturn()!=null && s.getGame().getBord()[x2][z2]==null && x2==2 && (z2+1==z1 || z2-1==z1) && x1==3
                             && s.getGame().getLastturn().split(":")[0].equals(String.valueOf(x1))
@@ -232,6 +240,8 @@ public class chessutilitys {
             cosmetiks.set(i+".Name",schachliste.get(i).getName());
             cosmetiks.set(i+".Help",schachliste.get(i).isHelp());
             cosmetiks.set(i+".Time",schachliste.get(i).getTime());
+            cosmetiks.set(i+".history",schachliste.get(i).isHistory());
+            cosmetiks.set(i+".timer",schachliste.get(i).getTimer());
         }
 
         try {
@@ -252,6 +262,8 @@ public class chessutilitys {
                     ,cosmetiks.getString(i+".Name")
                     ,cosmetiks.getBoolean(i+".Help")
                     ,cosmetiks.getInt(i+".Time")
+                    ,cosmetiks.getBoolean(i+".history")
+                    ,cosmetiks.getInt(i+".timer")
             ));
         }
     }
@@ -469,12 +481,19 @@ public class chessutilitys {
                             || s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].isWhite())
                             && chessutilitys.darferdas(s,Integer.valueOf(s.getGame().getTurn().split(":")[1]),Integer.valueOf(s.getGame().getTurn().split(":")[2]),x,z)){
 
+                        //movename for armorstand tracker
+                        String movename =s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().getName().substring(0, 3) +"->"
+                                +(x==0 ? "A" : x==1 ? "B" : x==2 ? "C" : x==3 ? "D" : x==4 ? "E" : x==5 ? "F" : x==6 ? "G" : "H")+z;
+
                         movefigure(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand(),s.getFeltstart().clone().add(x,0,z).clone().add(0.5,-1.9,0.5),s.getTime());
                         s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().removePotionEffect(PotionEffectType.GLOWING);
                         if(s.getGame().getBord()[x][z]!=null && s.getGame().getBord()[x][z].isWhite()!=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].isWhite()){
                             ArmorStand ar1=s.getGame().getBord()[x][z].getArmorStand();
                             ArmorStand ar2=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand();
                             Boolean iswhite=s.getGame().getBord()[x][z].isWhite();
+
+                            //replace name with take
+                            movename=movename.replace("->", "x")+" ";
 
                             new BukkitRunnable(){
                                 @Override
@@ -521,10 +540,12 @@ public class chessutilitys {
                                 || s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Turm")){
                             if(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Koenig")){
                                 if(Integer.valueOf(s.getGame().getTurn().split(":")[2])+2==z){
+                                    movename=ChatColor.YELLOW+"0-0  ";
                                     movefigure(s.getGame().getBord()[0][7].getArmorStand(),s.getFeltstart().clone().add(0,0,5).clone().add(0.5,-1.9,0.5),s.getTime());
                                     s.getGame().getBord()[0][5]=s.getGame().getBord()[0][7];
                                     s.getGame().getBord()[0][7]=null;
                                 } else if(Integer.valueOf(s.getGame().getTurn().split(":")[2])-2==z){
+                                    movename=ChatColor.YELLOW+"0-0-0";
                                     movefigure(s.getGame().getBord()[0][0].getArmorStand(),s.getFeltstart().clone().add(0,0,3).clone().add(0.5,-1.9,0.5),s.getTime());
                                     s.getGame().getBord()[0][3]=s.getGame().getBord()[0][0];
                                     s.getGame().getBord()[0][0]=null;
@@ -547,6 +568,10 @@ public class chessutilitys {
                         if(s.getGame().getBord()[x][z]==null
                                 && s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Bauer")
                                 && z!=Integer.valueOf(s.getGame().getTurn().split(":")[2])){
+
+                            //replace name with take
+                            movename=movename.replace("->", "x")+" ";
+
                             // Create the firework entity at the specified location
                             Firework firework = (Firework) s.getGame().getBord()[x-1][z].getArmorStand().getWorld().spawnEntity(
                                     s.getGame().getBord()[x-1][z].getArmorStand().getLocation(), EntityType.FIREWORK_ROCKET);
@@ -582,6 +607,7 @@ public class chessutilitys {
 
                         s.getGame().setLastturn(x+":"+z+":"+s.getGame().getTurn().split(":")[1]+":"+s.getGame().getTurn().split(":")[2]);
                         s.getGame().setTurn("netfinished");
+                        String finalMovename = movename;
                         Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->{
                             if(!s.hasGame())return;
                             //promotion
@@ -589,6 +615,8 @@ public class chessutilitys {
                                 s.getGame().setTurn("netfinished:white:"+x+":"+z);
                                 s.getGame().createpromolist(p);
                             } else s.getGame().setTurn("black");
+                            //add the round to the scorbord
+                            s.getGame().nextround(finalMovename);
                         }, (long) (delay*(9*s.getTime())));
 
                     } else {
@@ -615,12 +643,23 @@ public class chessutilitys {
                             && (s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])]==null
                             || !s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].isWhite())
                             && chessutilitys.darferdas(s,Integer.valueOf(s.getGame().getTurn().split(":")[1]),Integer.valueOf(s.getGame().getTurn().split(":")[2]),x,z)){
+
+                        //movename for armorstand tracker
+                        String movename =s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().getName().substring(0, 3) +"->"
+                                +(x==0 ? "A" : x==1 ? "B" : x==2 ? "C" : x==3 ? "D" : x==4 ? "E" : x==5 ? "F" : x==6 ? "G" : "H")+z;
+
                         movefigure(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand(),s.getFeltstart().clone().add(x,0,z).clone().add(0.5,-1.9,0.5),s.getTime());
                         s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().removePotionEffect(PotionEffectType.GLOWING);
+
+
                         if(s.getGame().getBord()[x][z]!=null && s.getGame().getBord()[x][z].isWhite()!=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].isWhite()){
                             ArmorStand ar1=s.getGame().getBord()[x][z].getArmorStand();
                             ArmorStand ar2=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand();
                             Boolean iswhite=s.getGame().getBord()[x][z].isWhite();
+
+                            //replace name with take
+                            movename=movename.replace("->", "x")+" ";
+
                             new BukkitRunnable(){
                                 @Override
                                 public void run() {
@@ -666,10 +705,12 @@ public class chessutilitys {
                                 ||s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Turm")){
                             if(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Koenig")){
                                 if(Integer.valueOf(s.getGame().getTurn().split(":")[2])+2==z){
+                                    movename=ChatColor.YELLOW+"0-0  ";
                                     movefigure(s.getGame().getBord()[7][7].getArmorStand(),s.getFeltstart().clone().add(7,0,5).clone().add(0.5,-1.9,0.5),s.getTime());
                                     s.getGame().getBord()[7][5]=s.getGame().getBord()[7][7];
                                     s.getGame().getBord()[7][7]=null;
                                 } else if(Integer.valueOf(s.getGame().getTurn().split(":")[2])-2==z){
+                                    movename=ChatColor.YELLOW+"0-0-0";
                                     movefigure(s.getGame().getBord()[7][0].getArmorStand(),s.getFeltstart().clone().add(7,0,3).clone().add(0.5,-1.9,0.5),s.getTime());
                                     s.getGame().getBord()[7][3]=s.getGame().getBord()[7][0];
                                     s.getGame().getBord()[7][0]=null;
@@ -692,6 +733,10 @@ public class chessutilitys {
                         if(s.getGame().getBord()[x][z]==null
                                 && s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Bauer")
                                 && z!=Integer.valueOf(s.getGame().getTurn().split(":")[2])){
+
+                            //replace name with take
+                            movename=movename.replace("->", "x")+" ";
+
                             // Create the firework entity at the specified location
                             Firework firework = (Firework) s.getGame().getBord()[x+1][z].getArmorStand().getWorld().spawnEntity(
                                     s.getGame().getBord()[x+1][z].getArmorStand().getLocation(), EntityType.FIREWORK_ROCKET);
@@ -727,13 +772,17 @@ public class chessutilitys {
 
                         s.getGame().setLastturn(x+":"+z+":"+s.getGame().getTurn().split(":")[1]+":"+s.getGame().getTurn().split(":")[2]);
                         s.getGame().setTurn("netfinished");
+                        String finalMovename = movename;
                         Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->{
                             if(!s.hasGame())return;
                             if(x==0 && s.getGame().getBord()[x][z].getClass().getSimpleName().equals("Bauer")){
                                 s.getGame().setTurn("netfinished:black:"+x+":"+z);
                                 s.getGame().createpromolist(p);
                             } else s.getGame().setTurn("white");
+                            //add the round to the scorbord
+                            s.getGame().nextround(finalMovename);
                         }, (long) (delay*(9*s.getTime())));
+
                     } else {
                         if(s.getGame().getBord()[x][z]!=null && !s.getGame().getBord()[x][z].isWhite()){
                             s.getGame().getBord()[x][z].getArmorStand().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));
@@ -793,5 +842,45 @@ public class chessutilitys {
                 break;
         }
 
+    }
+
+    public static ArmorStand getheadstand(OfflinePlayer of, Location loc) {
+        ArmorStand ar = loc.getWorld().spawn(loc, ArmorStand.class);
+        ar.setCustomNameVisible(false);
+        ar.setGravity(false);
+        ar.setVisible(false);
+        ar.setMarker(true);
+        ar.setSmall(true);
+        ar.setBasePlate(false);
+        //Create head
+        ItemStack head=new ItemStack(Material.PLAYER_HEAD,1,(short) 3);
+        SkullMeta skull=(SkullMeta) head.getItemMeta();
+        if(!of.isOnline()){
+            String base64 ="eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmViNTg4YjIxYTZmOThhZDFmZjRlMDg1YzU1MmRjYjA1MGVmYzljYWI0MjdmNDYwNDhmMThmYzgwMzQ3NWY3In19fQ==";
+
+            // Create a PlayerProfile with a random UUID and apply the base64 texture
+            PlayerProfile profile = getServer().createProfile(UUID.randomUUID(), "CustomHead");
+            profile.getProperties().add(new ProfileProperty("textures", base64));
+
+            // Set the profile to the skull meta
+            skull.setPlayerProfile(profile);
+        } else {
+            skull.setOwner(of.getName());
+        }
+        head.setItemMeta(skull);
+        ar.setHelmet(head);
+        return ar;
+    }
+
+    public static ArmorStand getNamedstand(String name, Location loc) {
+        ArmorStand ar = loc.getWorld().spawn(loc, ArmorStand.class);
+        ar.setCustomName(name);
+        ar.setCustomNameVisible(true);
+        ar.setGravity(false);
+        ar.setVisible(false);
+        ar.setMarker(true);
+        ar.setSmall(true);
+        ar.setBasePlate(false);
+        return ar;
     }
 }

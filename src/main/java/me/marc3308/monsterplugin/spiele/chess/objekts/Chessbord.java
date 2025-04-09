@@ -15,11 +15,15 @@ public class Chessbord {
     private Location feltend;
     private boolean help;
     private int time;
+    private boolean history;
+    private int timer;
 
-    public Chessbord(Location loc, String name, boolean help, int time) {
+    public Chessbord(Location loc, String name, boolean help, int time, boolean history, int timer) {
         this.time =time;
         this.help=help;
         this.name = name;
+        this.history = history;
+        this.timer = timer;
         this.feltstart =loc.getBlock().getLocation();
         this.feltend =loc.getBlock().getLocation().add(8,0,8);
 
@@ -28,6 +32,21 @@ public class Chessbord {
                 if(!Bukkit.getOnlinePlayers().isEmpty())loc.getWorld().spawnParticle(END_ROD,loc.clone().add(i,1,j),5,0,0,0,0.01);
             }
         }
+    }
+
+    public boolean isHistory() {
+        return history;
+    }
+
+    public void setHistory(boolean history) {
+        this.history = history;
+    }
+
+    public int getTimer() {
+        return timer;
+    }
+    public void setTimer(int timer) {
+        this.timer = timer;
     }
 
     public int getTime() {
@@ -48,15 +67,15 @@ public class Chessbord {
 
     public void setGame(Player p) {
         if(p==null && game!=null && game.isGamehasstarted()){
-            game.getBlackstand().remove();
-            game.getWhitstand().remove();
             game.setGamehasstarted(false);
+
+            game.getallthearmor().forEach(f -> f.remove());
+
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
                     if(game.getBord()[i][j]!=null)game.getBord()[i][j].getArmorStand().remove();
                 }
             }
-            game.getPromolist().forEach(s -> s.getArmorStand().remove());
         }
         this.game = (p==null ? null : new chessgame(this,p));
     }
@@ -77,12 +96,9 @@ public class Chessbord {
         this.name = name;
     }
 
-    public void setFeltend(Location feltend) {
-        this.feltend = feltend;
-    }
-
-    public void setFeltstart(Location feltstart) {
-        this.feltstart = feltstart;
+    public void setFeldLoc(Location newfeldloc) {
+        this.feltstart = newfeldloc;
+        this.feltend = newfeldloc.add(8,0,8);
     }
 
     public Location getFeltend() {

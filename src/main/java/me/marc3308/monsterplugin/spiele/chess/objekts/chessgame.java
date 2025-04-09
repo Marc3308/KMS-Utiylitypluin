@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import me.marc3308.monsterplugin.Monsterplugin;
+import me.marc3308.monsterplugin.spiele.chess.chessutilitys;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -21,13 +22,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import static me.marc3308.monsterplugin.spiele.chess.chessutilitys.darferdas;
-import static me.marc3308.monsterplugin.spiele.chess.chessutilitys.movefigure;
+import static me.marc3308.monsterplugin.spiele.chess.chessutilitys.*;
 
 public class chessgame {
     private Chessbord chessbord;
     private Player spieler1;
     private Player spieler2;
+    private int whitetime;
+    private int blacktime;
     private boolean gamehasstarted;
     private Figuren[][] bord = new Figuren[8][8];
     private String lastturn;
@@ -38,16 +40,13 @@ public class chessgame {
     private boolean white_queenside;
     private ArmorStand whitstand;
     private ArmorStand blackstand;
+    private ArmorStand whitetimer;
+    private ArmorStand blacktimer;
     private ArrayList<Figuren> promolist = new ArrayList<>();
     private ArrayList<Player> zuschauerlist=new ArrayList<>();
+    private ArrayList<ArmorStand> rüstungslisteweiß=new ArrayList<>();
+    private ArrayList<ArmorStand> rüstungslisteschwarz=new ArrayList<>();
 
-    public ArmorStand getWhitstand() {
-        return whitstand;
-    }
-
-    public ArmorStand getBlackstand() {
-        return blackstand;
-    }
 
     public ArrayList<Player> getZuschauerlist() {
         return zuschauerlist;
@@ -55,10 +54,6 @@ public class chessgame {
 
     public void setLastturn(String lastturn) {
         this.lastturn = lastturn;
-    }
-
-    public ArrayList<Figuren> getPromolist() {
-        return promolist;
     }
 
     public String getLastturn() {
@@ -150,6 +145,8 @@ public class chessgame {
         gamehasstarted = true;
         spieler1=p;
         spieler2=p2;
+        whitetime=chessbord.getTimer()*60;
+        blacktime=chessbord.getTimer()*60;
         final int[] i = {0};
 
         //cammera
@@ -167,6 +164,53 @@ public class chessgame {
         blackstand.setMarker(true);
         blackstand.setRotation(90, 90); // Look down
 
+        //scorebord if on
+        if(chessbord.isHistory()){
+            rüstungslisteweiß.add(chessutilitys.getheadstand(spieler1,chessbord.getFeltstart().add(0, 1.5, 3)));
+            rüstungslisteweiß.getFirst().setRotation(-90, 0);
+            rüstungslisteweiß.add(getNamedstand(ChatColor.GREEN+""+spieler1.getPersistentDataContainer().getOrDefault(new NamespacedKey(Monsterplugin.getPlugin(),spieler2.getName()+"score"),PersistentDataType.INTEGER,0)
+                            +ChatColor.GRAY+" VS "+
+                            ChatColor.RED+""+spieler2.getPersistentDataContainer().getOrDefault(new NamespacedKey(Monsterplugin.getPlugin(),spieler1.getName()+"score"),PersistentDataType.INTEGER,0)
+                    ,chessbord.getFeltstart().add(0,2,4)));
+            rüstungslisteweiß.add(chessutilitys.getheadstand(spieler2,chessbord.getFeltstart().add(0, 1.5, 5)));
+            rüstungslisteweiß.getLast().setRotation(-90, 0);
+
+            rüstungslisteschwarz.add(chessutilitys.getheadstand(spieler1,chessbord.getFeltstart().add(8, 1.5, 3)));
+            rüstungslisteschwarz.getFirst().setRotation(90, 0);
+            rüstungslisteschwarz.add(getNamedstand(ChatColor.RED+""+spieler1.getPersistentDataContainer().getOrDefault(new NamespacedKey(Monsterplugin.getPlugin(),spieler2.getName()+"score"),PersistentDataType.INTEGER,0)
+                            +ChatColor.GRAY+" VS "+
+                            ChatColor.GREEN+""+spieler2.getPersistentDataContainer().getOrDefault(new NamespacedKey(Monsterplugin.getPlugin(),spieler1.getName()+"score"),PersistentDataType.INTEGER,0)
+                    ,chessbord.getFeltstart().add(8,2,4)));
+            rüstungslisteschwarz.add(chessutilitys.getheadstand(spieler2,chessbord.getFeltstart().add(8, 1.5, 5)));
+            rüstungslisteschwarz.getLast().setRotation(90, 0);
+        }
+
+        //timer
+        if(chessbord.getTimer()>0){
+            whitetimer = getNamedstand(ChatColor.WHITE+""+(whitetime/60)+":"+(whitetime%60<10 ? "0"+(whitetime%60) : whitetime%60),chessbord.getFeltstart().add(0, 1.5, 4));
+            blacktimer= getNamedstand(ChatColor.GRAY+""+(blacktime/60)+":"+(blacktime%60<10 ? "0"+(blacktime%60) : blacktime%60),chessbord.getFeltstart().add(8, 1.5, 4));
+
+            //run the timer
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(Monsterplugin.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    if(whitetimer.isDead() || blacktimer.isDead() || !gamehasstarted){
+                        return;
+                    }
+                    if(turn.equals("white")){
+                        if(whitetime<=0)gameend("black");
+                        whitetime--;
+                        whitetimer.setCustomName(ChatColor.WHITE+""+(whitetime/60)+":"+(whitetime%60<10 ? "0"+(whitetime%60) : whitetime%60));
+                    } else if(turn.equals("black")){
+                        if(blacktime<=0)gameend("white");
+                        blacktime--;
+                        blacktimer.setCustomName(ChatColor.GRAY+""+(blacktime/60)+":"+(blacktime%60<10 ? "0"+(blacktime%60) : blacktime%60));
+                    }
+                }
+            },0,20); // 1 sec interval
+
+        }
+
         new BukkitRunnable(){
             @Override
             public void run() {
@@ -179,8 +223,12 @@ public class chessgame {
                         ProtocolLibrary.getProtocolManager().sendServerPacket(p, cameraPacket2);
                         if(p.equals(spieler1) || p.equals(spieler2))Bukkit.getOnlinePlayers().forEach(p1 -> p.showPlayer(Monsterplugin.getPlugin(), p1));
                     });
+                    blacktimer.remove();
+                    whitetimer.remove();
                     whitstand.remove();
                     blackstand.remove();
+                    rüstungslisteweiß.forEach(f -> f.remove());
+                    rüstungslisteschwarz.forEach(e -> e.remove());
                     if(gamehasstarted)gameend("none");
                     chessbord.setGame(null);
                     cancel();
@@ -363,12 +411,34 @@ public class chessgame {
         }
     }
 
+    //add a armor stand vor the move history
+    public void nextround(String name){
+        if(!chessbord.isHistory())return;
+        if(getTurn().split(":")[0].equals("black") || (getTurn().split(":").length>1 && getTurn().split(":")[1].equals("black"))){
+
+            rüstungslisteweiß.forEach(r -> r.teleport(r.getLocation().add(0,0.3,0)));
+            rüstungslisteschwarz.forEach(r -> r.teleport(r.getLocation().add(0,0.3,0)));
+            //weiß
+            rüstungslisteweiß.add(chessutilitys.getNamedstand(rüstungslisteweiß.size()-2+". "+name,chessbord.getFeltstart().add(0, 2, 4)));
+            rüstungslisteschwarz.add(chessutilitys.getNamedstand(rüstungslisteschwarz.size()-2+". "+name,chessbord.getFeltstart().add(8, 2, 4)));
+        } else {
+            rüstungslisteweiß.getLast().setCustomName(rüstungslisteweiß.getLast().getName()+"   "+name);
+            rüstungslisteschwarz.getLast().setCustomName(rüstungslisteschwarz.getLast().getName()+"   "+name);
+        }
+    }
+
     public void gameend(String winner){
         gamehasstarted=false;
         promolist.forEach(f -> {
             movefigure(f.getArmorStand(), f.getArmorStand().getLocation().clone().add(0,-3,0),3);
             Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> f.getArmorStand().remove(),20*4);
         });
+
+        if(winner.equals("white"))spieler1.getPersistentDataContainer().set(new NamespacedKey(Monsterplugin.getPlugin(),spieler2.getName()+"score")
+                ,PersistentDataType.INTEGER,spieler1.getPersistentDataContainer().getOrDefault(new NamespacedKey(Monsterplugin.getPlugin(),spieler2.getName()+"score"),PersistentDataType.INTEGER,0)+1);
+        if(winner.equals("black"))spieler2.getPersistentDataContainer().set(new NamespacedKey(Monsterplugin.getPlugin(),spieler1.getName()+"score")
+                ,PersistentDataType.INTEGER,spieler2.getPersistentDataContainer().getOrDefault(new NamespacedKey(Monsterplugin.getPlugin(),spieler1.getName()+"score"),PersistentDataType.INTEGER,0)+1);
+
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if(bord[i][j]==null)continue;
@@ -484,5 +554,22 @@ public class chessgame {
 
     public boolean isGamehasstarted() {
         return gamehasstarted;
+    }
+
+    public ArrayList<ArmorStand> getallthearmor(){
+        ArrayList<ArmorStand> allarmor= new ArrayList<>();
+
+        rüstungslisteschwarz.forEach(f->allarmor.add(f));
+        rüstungslisteweiß.forEach(f->allarmor.add(f));
+        promolist.forEach(f -> allarmor.add(f.getArmorStand()));
+
+        allarmor.add(whitstand);
+        allarmor.add(blackstand);
+
+        allarmor.add(whitetimer);
+        allarmor.add(blacktimer);
+
+
+        return allarmor;
     }
 }

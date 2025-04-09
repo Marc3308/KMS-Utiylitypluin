@@ -10,7 +10,7 @@ permissions:
 
 commands:
   spiele:
-    description: create a game
+    description: open game gui
     permission: technikdetails
   spinfo:
     description: info about spawn

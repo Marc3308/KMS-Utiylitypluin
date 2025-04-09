@@ -9,6 +9,7 @@ import me.marc3308.monsterplugin.cosmetiks.comamndmenu;
 import me.marc3308.monsterplugin.cosmetiks.events;
 import me.marc3308.monsterplugin.eventlistener.*;
 import me.marc3308.monsterplugin.spiele.spielecommandmanager;
+import me.marc3308.monsterplugin.spiele.spielguicontroller;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -118,6 +119,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
             Bukkit.getConsoleSender().sendMessage("Startet Generating chunk at: "+x+"x "+z+"z");
         }
 
+        Bukkit.getPluginManager().registerEvents(new spielguicontroller(),this);
         Bukkit.getPluginManager().registerEvents(new chessevents(),this);
         Bukkit.getPluginManager().registerEvents(new events(),this);
         Bukkit.getPluginManager().registerEvents(new joinleavetracker(),this);
@@ -239,7 +241,6 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         Cosmetikobjekt.savecosmis();
         chessutilitys.savebords();
         Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED+"Shit is Saved");
-
         chessutilitys.schachliste.stream().filter(s -> s.hasGame() && s.getGame().isGamehasstarted()).forEach(s -> s.setGame(null));
     }
 
