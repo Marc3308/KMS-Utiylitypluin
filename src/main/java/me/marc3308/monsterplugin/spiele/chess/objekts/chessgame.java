@@ -166,6 +166,7 @@ public class chessgame {
 
         //scorebord if on
         if(chessbord.isHistory()){
+            //history
             rüstungslisteweiß.add(chessutilitys.getheadstand(spieler1,chessbord.getFeltstart().add(0, 1.5, 3)));
             rüstungslisteweiß.getFirst().setRotation(-90, 0);
             rüstungslisteweiß.add(getNamedstand(ChatColor.GREEN+""+spieler1.getPersistentDataContainer().getOrDefault(new NamespacedKey(Monsterplugin.getPlugin(),spieler2.getName()+"score"),PersistentDataType.INTEGER,0)
@@ -197,11 +198,11 @@ public class chessgame {
                     if(whitetimer.isDead() || blacktimer.isDead() || !gamehasstarted){
                         return;
                     }
-                    if(turn.equals("white")){
+                    if(turn.equals("white") || turn.split(":")[0].equals("white")){
                         if(whitetime<=0)gameend("black");
                         whitetime--;
                         whitetimer.setCustomName(ChatColor.WHITE+""+(whitetime/60)+":"+(whitetime%60<10 ? "0"+(whitetime%60) : whitetime%60));
-                    } else if(turn.equals("black")){
+                    } else if(turn.equals("black") || turn.split(":")[0].equals("black")){
                         if(blacktime<=0)gameend("white");
                         blacktime--;
                         blacktimer.setCustomName(ChatColor.GRAY+""+(blacktime/60)+":"+(blacktime%60<10 ? "0"+(blacktime%60) : blacktime%60));
@@ -406,8 +407,8 @@ public class chessgame {
             spawnbordside("black");
         } else {
             setTurn("farbauswal");
-            bord[0][0] = new Bauer(chessbord.getFeltstart().clone().add(3.5,0,3), Material.PAPER, 10001,true);
-            bord[0][1] = new Bauer(chessbord.getFeltstart().clone().add(3.5,0,4), Material.PAPER, 10011,false);
+            bord[0][0] = new Bauer(chessbord.getFeltstart().clone().add(3.5,0,3), Material.PAPER, 10001,true, chessbord.getGrosse());
+            bord[0][1] = new Bauer(chessbord.getFeltstart().clone().add(3.5,0,4), Material.PAPER, 10011,false, chessbord.getGrosse());
         }
     }
 
@@ -430,7 +431,7 @@ public class chessgame {
     public void gameend(String winner){
         gamehasstarted=false;
         promolist.forEach(f -> {
-            movefigure(f.getArmorStand(), f.getArmorStand().getLocation().clone().add(0,-3,0),3);
+            movefigure(f.getArmorStand(), f.getArmorStand().getLocation().clone().add(0,-(3* chessbord.getGrosse()),0),3);
             Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> f.getArmorStand().remove(),20*4);
         });
 
@@ -442,7 +443,7 @@ public class chessgame {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if(bord[i][j]==null)continue;
-                movefigure(bord[i][j].getArmorStand(),bord[i][j].getArmorStand().getLocation().clone().add(0,-3,0),3);
+                movefigure(bord[i][j].getArmorStand(),bord[i][j].getArmorStand().getLocation().clone().add(0,-(3* chessbord.getGrosse()),0),3);
                 int finalI = i;
                 int finalJ = j;
                 Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> bord[finalI][finalJ].getArmorStand().remove(),20*4);
@@ -487,13 +488,13 @@ public class chessgame {
 
             for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < 8; j++) {
-                    if(i==1)bord[i][j] = new Bauer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+1,true);
+                    if(i==1)bord[i][j] = new Bauer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+1,true, chessbord.getGrosse());
                     if(i==0)bord[i][j] =
-                             j==0 || j==7 ? new Turm(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+2,true)
-                            : j==1 || j==6 ? new Springer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+3,true)
-                            : j==2 || j==5 ? new Laufer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+4,true)
-                            : j==3 ? new Dame(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+5,true)
-                            : new Koenig(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+6,true); //white
+                             j==0 || j==7 ? new Turm(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+2,true, chessbord.getGrosse())
+                            : j==1 || j==6 ? new Springer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+3,true, chessbord.getGrosse())
+                            : j==2 || j==5 ? new Laufer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+4,true, chessbord.getGrosse())
+                            : j==3 ? new Dame(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+5,true, chessbord.getGrosse())
+                            : new Koenig(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+6,true, chessbord.getGrosse()); //white
                 }
             }
         } else {
@@ -503,13 +504,13 @@ public class chessgame {
 
             for (int i = 7; i > 5; i--) {
                 for (int j = 0; j < 8; j++) {
-                    if(i==6)bord[i][j] = new Bauer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+11,false);
+                    if(i==6)bord[i][j] = new Bauer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+11,false, chessbord.getGrosse());
                     if(i==7)bord[i][j] =
-                            j==0 || j==7 ? new Turm(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+12,false)
-                                    : j==1 || j==6 ? new Springer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+13,false)
-                                    : j==2 || j==5 ? new Laufer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+14,false)
-                                    : j==3 ? new Dame(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+15,false)
-                                    : new Koenig(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+16,false); //black
+                            j==0 || j==7 ? new Turm(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+12,false, chessbord.getGrosse())
+                                    : j==1 || j==6 ? new Springer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+13,false, chessbord.getGrosse())
+                                    : j==2 || j==5 ? new Laufer(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+14,false, chessbord.getGrosse())
+                                    : j==3 ? new Dame(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+15,false, chessbord.getGrosse())
+                                    : new Koenig(chessbord.getFeltstart().add(i,0,j), Material.PAPER, modeldata+16,false, chessbord.getGrosse()); //black
                 }
             }
         }
@@ -536,10 +537,10 @@ public class chessgame {
         Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> moveall(-2),20);
         promolist.forEach(f -> f.getArmorStand().remove());
         promolist.clear();
-        promolist.add(new Turm(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,2), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+2 : modeldata+12,getTurn().split(":")[1].equals("white")));
-        promolist.add(new Springer(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,3), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+3 : modeldata+13,getTurn().split(":")[1].equals("white")));
-        promolist.add(new Laufer(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,4), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+4 : modeldata+14,getTurn().split(":")[1].equals("white")));
-        promolist.add(new Dame(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,5), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+5 : modeldata+15,getTurn().split(":")[1].equals("white")));
+        promolist.add(new Turm(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,2), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+2 : modeldata+12,getTurn().split(":")[1].equals("white"), chessbord.getGrosse()));
+        promolist.add(new Springer(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,3), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+3 : modeldata+13,getTurn().split(":")[1].equals("white"), chessbord.getGrosse()));
+        promolist.add(new Laufer(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,4), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+4 : modeldata+14,getTurn().split(":")[1].equals("white"), chessbord.getGrosse()));
+        promolist.add(new Dame(chessbord.getFeltstart().add(getTurn().split(":")[1].equals("white") ? 7 : 0,0,5), Material.PAPER, getTurn().split(":")[1].equals("white") ? modeldata+5 : modeldata+15,getTurn().split(":")[1].equals("white"), chessbord.getGrosse()));
         Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () ->setTurn("promo:"+getTurn().split(":")[1]+":"+getTurn().split(":")[2]+":"+getTurn().split(":")[3]),20*4);
     }
 

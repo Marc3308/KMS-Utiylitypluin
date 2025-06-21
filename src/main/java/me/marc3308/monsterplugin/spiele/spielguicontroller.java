@@ -10,6 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import static me.marc3308.monsterplugin.spiele.chess.chessutilitys.schachliste;
@@ -57,7 +58,7 @@ public class spielguicontroller implements Listener {
                 case COMMAND_BLOCK:
                     switch (e.getInventory().getItem(47).getItemMeta().getDisplayName()){
                         case "Schach":
-                            schachliste.add(new Chessbord(p.getLocation(),"Schach"+(schachliste.size()+1),true,5,true,0));
+                            schachliste.add(new Chessbord(p.getLocation(),"Schach"+(schachliste.size()+1),true,5,true,0,1));
                             break;
                     }
                     openSpieleMenu(p,Integer.parseInt(e.getInventory().getItem(51).getItemMeta().getDisplayName())-1,e.getInventory().getItem(47).getItemMeta().getDisplayName());
@@ -108,6 +109,19 @@ public class spielguicontroller implements Listener {
                     case 45:
                         openSpieleMenu(p,1,"Schach");
                         return;
+                        //größe -1
+                    case 48:
+                        b.setGrosse(b.getGrosse()-0.1);
+                        break;
+                        //wieder 1
+                    case 49:
+                        b.setGrosse(1);
+                        break;
+                        //größe +1
+                    case 50:
+                        b.setGrosse(b.getGrosse()+0.1);
+                        break;
+
                 }
                 opengamemenu(p,"Schach",b.getName());
             }, () -> {
@@ -168,13 +182,13 @@ public class spielguicontroller implements Listener {
                         meta.setDisplayName("§a§l"+bord.getName());
                         meta.setLore(new ArrayList<>(){{
                             add("-------Einstellungen-------");
+                            add("§7Figurengröße: "+new DecimalFormat("#.#").format(bord.getGrosse()));
                             add("§7ZugHistorye:  "+(bord.isHistory() ? "§aAktiv" : "§cInaktiv"));
                             add("§7Hilfslinien:  "+(bord.isHelp() ? "§aAktiv" : "§cInaktiv"));
                             add("§7FeltStart:§e    X"+bord.getFeltstart().getBlockX()+" Y"+bord.getFeltstart().getBlockY()+" Z"+bord.getFeltstart().getBlockZ());
                             add("§7FeltEnde: §e    X"+bord.getFeltend().getBlockX()+" Y"+bord.getFeltend().getBlockY()+" Z"+bord.getFeltend().getBlockZ());
                             add("§7ZugZeit: §e     "+bord.getTime()+" sec");
                             add("§7Zeit: §e         "+(bord.getTimer()>0 ? bord.getTimer()+" Min" : "Unbegrenzt"));
-
 
                         }});
                         setItemMeta(meta);
@@ -303,6 +317,28 @@ public class spielguicontroller implements Listener {
                             meta.setLore(new ArrayList<>(){{
                                 add("§cLösche dieses spiel");
                             }});
+                            setItemMeta(meta);
+                        }});
+
+                        //figuren Row
+                        inv.setItem(48,new ItemStack(Material.RED_CONCRETE){{
+                            ItemMeta meta = getItemMeta();
+                            meta.setDisplayName("§c§l-0.1 Höhe");
+                            setItemMeta(meta);
+                        }});
+                        inv.setItem(49,new ItemStack(Material.ARMOR_STAND){{
+                            ItemMeta meta = getItemMeta();
+                            meta.setDisplayName("§a§lFiguren");
+                            meta.setLore(new ArrayList<>(){{
+                                add("§7Hier kannst du die Höhe der Figuren");
+                                add("§7ändern. Momentane Höhe ist: "+ChatColor.WHITE+new DecimalFormat("#.#").format(bord.getGrosse()));
+                                add("Hier klicken um die Höhe zurückzusetzen (1)");
+                            }});
+                            setItemMeta(meta);
+                        }});
+                        inv.setItem(50,new ItemStack(Material.GREEN_CONCRETE){{
+                            ItemMeta meta = getItemMeta();
+                            meta.setDisplayName("§a§l+0.1 Höhe");
                             setItemMeta(meta);
                         }});
 

@@ -242,6 +242,7 @@ public class chessutilitys {
             cosmetiks.set(i+".Time",schachliste.get(i).getTime());
             cosmetiks.set(i+".history",schachliste.get(i).isHistory());
             cosmetiks.set(i+".timer",schachliste.get(i).getTimer());
+            cosmetiks.set(i+".grosse",schachliste.get(i).getGrosse());
         }
 
         try {
@@ -264,6 +265,7 @@ public class chessutilitys {
                     ,cosmetiks.getInt(i+".Time")
                     ,cosmetiks.getBoolean(i+".history")
                     ,cosmetiks.getInt(i+".timer")
+                    ,cosmetiks.getDouble(i+".grosse")
             ));
         }
     }
@@ -485,7 +487,7 @@ public class chessutilitys {
                         String movename =s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().getName().substring(0, 3) +"->"
                                 +(x==0 ? "A" : x==1 ? "B" : x==2 ? "C" : x==3 ? "D" : x==4 ? "E" : x==5 ? "F" : x==6 ? "G" : "H")+z;
 
-                        movefigure(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand(),s.getFeltstart().clone().add(x,0,z).clone().add(0.5,-1.9,0.5),s.getTime());
+                        movefigure(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand(),s.getFeltstart().clone().add(x,0,z).clone().add(0.5,-(2*s.getGrosse())+0.1,0.5),s.getTime());
                         s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().removePotionEffect(PotionEffectType.GLOWING);
                         if(s.getGame().getBord()[x][z]!=null && s.getGame().getBord()[x][z].isWhite()!=s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].isWhite()){
                             ArmorStand ar1=s.getGame().getBord()[x][z].getArmorStand();
@@ -541,12 +543,12 @@ public class chessutilitys {
                             if(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Koenig")){
                                 if(Integer.valueOf(s.getGame().getTurn().split(":")[2])+2==z){
                                     movename=ChatColor.YELLOW+"0-0  ";
-                                    movefigure(s.getGame().getBord()[0][7].getArmorStand(),s.getFeltstart().clone().add(0,0,5).clone().add(0.5,-1.9,0.5),s.getTime());
+                                    movefigure(s.getGame().getBord()[0][7].getArmorStand(),s.getFeltstart().clone().add(0,0,5).clone().add(0.5,-(2*s.getGrosse())+0.1,0.5),s.getTime());
                                     s.getGame().getBord()[0][5]=s.getGame().getBord()[0][7];
                                     s.getGame().getBord()[0][7]=null;
                                 } else if(Integer.valueOf(s.getGame().getTurn().split(":")[2])-2==z){
                                     movename=ChatColor.YELLOW+"0-0-0";
-                                    movefigure(s.getGame().getBord()[0][0].getArmorStand(),s.getFeltstart().clone().add(0,0,3).clone().add(0.5,-1.9,0.5),s.getTime());
+                                    movefigure(s.getGame().getBord()[0][0].getArmorStand(),s.getFeltstart().clone().add(0,0,3).clone().add(0.5,-(2*s.getGrosse())+0.1,0.5),s.getTime());
                                     s.getGame().getBord()[0][3]=s.getGame().getBord()[0][0];
                                     s.getGame().getBord()[0][0]=null;
                                 }
@@ -648,7 +650,7 @@ public class chessutilitys {
                         String movename =s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().getName().substring(0, 3) +"->"
                                 +(x==0 ? "A" : x==1 ? "B" : x==2 ? "C" : x==3 ? "D" : x==4 ? "E" : x==5 ? "F" : x==6 ? "G" : "H")+z;
 
-                        movefigure(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand(),s.getFeltstart().clone().add(x,0,z).clone().add(0.5,-1.9,0.5),s.getTime());
+                        movefigure(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand(),s.getFeltstart().clone().add(x,0,z).clone().add(0.5,-(2*s.getGrosse())+0.1,0.5),s.getTime());
                         s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getArmorStand().removePotionEffect(PotionEffectType.GLOWING);
 
 
@@ -706,12 +708,12 @@ public class chessutilitys {
                             if(s.getGame().getBord()[Integer.valueOf(s.getGame().getTurn().split(":")[1])][Integer.valueOf(s.getGame().getTurn().split(":")[2])].getClass().getSimpleName().equals("Koenig")){
                                 if(Integer.valueOf(s.getGame().getTurn().split(":")[2])+2==z){
                                     movename=ChatColor.YELLOW+"0-0  ";
-                                    movefigure(s.getGame().getBord()[7][7].getArmorStand(),s.getFeltstart().clone().add(7,0,5).clone().add(0.5,-1.9,0.5),s.getTime());
+                                    movefigure(s.getGame().getBord()[7][7].getArmorStand(),s.getFeltstart().clone().add(7,0,5).clone().add(0.5,-(2*s.getGrosse())+0.1,0.5),s.getTime());
                                     s.getGame().getBord()[7][5]=s.getGame().getBord()[7][7];
                                     s.getGame().getBord()[7][7]=null;
                                 } else if(Integer.valueOf(s.getGame().getTurn().split(":")[2])-2==z){
                                     movename=ChatColor.YELLOW+"0-0-0";
-                                    movefigure(s.getGame().getBord()[7][0].getArmorStand(),s.getFeltstart().clone().add(7,0,3).clone().add(0.5,-1.9,0.5),s.getTime());
+                                    movefigure(s.getGame().getBord()[7][0].getArmorStand(),s.getFeltstart().clone().add(7,0,3).clone().add(0.5,-(2*s.getGrosse())+0.1,0.5),s.getTime());
                                     s.getGame().getBord()[7][3]=s.getGame().getBord()[7][0];
                                     s.getGame().getBord()[7][0]=null;
                                 }
@@ -810,8 +812,8 @@ public class chessutilitys {
                     ArmorStand ar1 = s.getGame().getBord()[0][0].getArmorStand();
                     ArmorStand ar2 = s.getGame().getBord()[0][1].getArmorStand();
 
-                    chessutilitys.movefigure(ar1,ar1.getLocation().clone().add(0,-3,0),s.getTime());
-                    chessutilitys.movefigure(ar2,ar2.getLocation().clone().add(0,-3,0),s.getTime());
+                    chessutilitys.movefigure(ar1,ar1.getLocation().clone().add(0,-(3*s.getGrosse()),0),s.getTime());
+                    chessutilitys.movefigure(ar2,ar2.getLocation().clone().add(0,-(3*s.getGrosse()),0),s.getTime());
                     Bukkit.getScheduler().runTaskLater(Monsterplugin.getPlugin(), () -> {
                         ar1.remove();
                         ar2.remove();

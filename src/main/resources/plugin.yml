@@ -35,3 +35,6 @@ commands:
   cosmetics:
     description: gives you a cosmetik
     permission: technikdetails
+  loadworldtomax:
+    description: loads the world to max
+    permission: op

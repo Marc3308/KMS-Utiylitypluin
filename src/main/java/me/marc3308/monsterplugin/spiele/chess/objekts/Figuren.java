@@ -3,6 +3,7 @@ package me.marc3308.monsterplugin.spiele.chess.objekts;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,29 +18,34 @@ public abstract class Figuren {
     abstract public ArmorStand getArmorStand();
     abstract public boolean isWhite();
 
+    public ArmorStand getpasteArmorStand(Location loc, String name, Material mat, int customModelData, double grose) {
+        ArmorStand armor = loc.getWorld().spawn(loc.clone().add(0.5,-(3*grose),0.5),ArmorStand.class);
+
+        armor.setInvulnerable(true);
+        armor.setCustomName(name);
+        armor.setCustomNameVisible(false);
+        armor.setGravity(false);
+        armor.setVisible(false);
+        armor.setMarker(true);
+        armor.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(grose);
+        ItemStack helmet = new ItemStack(mat);
+        ItemMeta meta = helmet.getItemMeta();
+        meta.setCustomModelData(customModelData);
+        helmet.setItemMeta(meta);
+        armor.setHelmet(helmet);
+        return armor;
+    }
+
 }
 
 class Bauer extends Figuren{
 
     private boolean white;
     private ArmorStand ar;
-    public Bauer(Location loc,Material mat,int customModelData, boolean white){
+    public Bauer(Location loc,Material mat,int customModelData, boolean white,double grose){
         this.white=white;
-
-        ar = loc.getWorld().spawn(loc.clone().add(0.5,-3,0.5),ArmorStand.class);
-        ar.setInvulnerable(true);
-        ar.setCustomName((white ? ChatColor.WHITE : ChatColor.DARK_GRAY)+"Bauer");
-        ar.setCustomNameVisible(false);
-        ar.setGravity(false);
-        ar.setVisible(false);
-        ar.setMarker(true);
-        ItemStack helmet = new ItemStack(mat);
-        ItemMeta meta = helmet.getItemMeta();
-        meta.setCustomModelData(customModelData);
-        helmet.setItemMeta(meta);
-        ar.setHelmet(helmet);
-
-        movefigure(ar,loc.clone().add(0.5,-1.9,0.5),3);
+        ar = getpasteArmorStand(loc,(white ? ChatColor.WHITE : ChatColor.DARK_GRAY)+"Bauer",mat,customModelData,grose);
+        movefigure(ar,loc.clone().add(0.5,-(2*grose)+0.1,0.5),3);
     }
 
     @Override
@@ -57,23 +63,10 @@ class Turm extends Figuren{
 
     private boolean white;
     private ArmorStand ar;
-    public Turm(Location loc,Material mat,int customModelData, boolean white){
+    public Turm(Location loc,Material mat,int customModelData, boolean white,double grose){
         this.white=white;
-
-        ar = loc.getWorld().spawn(loc.clone().add(0.5,-3,0.5),ArmorStand.class);
-        ar.setInvulnerable(true);
-        ar.setCustomName((white ? ChatColor.WHITE : ChatColor.DARK_GRAY)+"Turm");
-        ar.setCustomNameVisible(false);
-        ar.setGravity(false);
-        ar.setVisible(false);
-        ar.setMarker(true);
-        ItemStack helmet = new ItemStack(mat);
-        ItemMeta meta = helmet.getItemMeta();
-        meta.setCustomModelData(customModelData);
-        helmet.setItemMeta(meta);
-        ar.setHelmet(helmet);
-
-        movefigure(ar,loc.clone().add(0.5,-1.9,0.5),3);
+        ar = getpasteArmorStand(loc,(white ? ChatColor.WHITE : ChatColor.DARK_GRAY)+"Turm",mat,customModelData,grose);
+        movefigure(ar,loc.clone().add(0.5,-(2*grose)+0.1,0.5),3);
     }
 
     @Override
@@ -91,23 +84,10 @@ class Springer extends Figuren{
 
     private boolean white;
     private ArmorStand ar;
-    public Springer(Location loc,Material mat,int customModelData, boolean white){
+    public Springer(Location loc,Material mat,int customModelData, boolean white,double grose){
         this.white=white;
-
-        ar = loc.getWorld().spawn(loc.clone().add(0.5,-3,0.5),ArmorStand.class);
-        ar.setInvulnerable(true);
-        ar.setCustomName((white ? ChatColor.WHITE : ChatColor.DARK_GRAY)+"Springer");
-        ar.setCustomNameVisible(false);
-        ar.setGravity(false);
-        ar.setVisible(false);
-        ar.setMarker(true);
-        ItemStack helmet = new ItemStack(mat);
-        ItemMeta meta = helmet.getItemMeta();
-        meta.setCustomModelData(customModelData);
-        helmet.setItemMeta(meta);
-        ar.setHelmet(helmet);
-
-        movefigure(ar,loc.clone().add(0.5,-1.9,0.5),3);
+        ar = getpasteArmorStand(loc,(white ? ChatColor.WHITE : ChatColor.DARK_GRAY)+"Springer",mat,customModelData,grose);
+        movefigure(ar,loc.clone().add(0.5,-(2*grose)+0.1,0.5),3);
     }
 
     @Override
@@ -125,23 +105,10 @@ class Laufer extends Figuren{
 
     private boolean white;
     private ArmorStand ar;
-    public Laufer(Location loc,Material mat,int customModelData, boolean white){
+    public Laufer(Location loc,Material mat,int customModelData, boolean white,double grose){
         this.white=white;
-
-        ar = loc.getWorld().spawn(loc.clone().add(0.5,-3,0.5),ArmorStand.class);
-        ar.setInvulnerable(true);
-        ar.setCustomName((white ? ChatColor.WHITE : ChatColor.DARK_GRAY)+"Laufer");
-        ar.setCustomNameVisible(false);
-        ar.setGravity(false);
-        ar.setVisible(false);
-        ar.setMarker(true);
-        ItemStack helmet = new ItemStack(mat);
-        ItemMeta meta = helmet.getItemMeta();
-        meta.setCustomModelData(customModelData);
-        helmet.setItemMeta(meta);
-        ar.setHelmet(helmet);
-
-        movefigure(ar,loc.clone().add(0.5,-1.9,0.5),3);
+        ar = getpasteArmorStand(loc,(white ? ChatColor.WHITE : ChatColor.DARK_GRAY)+"Laufer",mat,customModelData,grose);
+        movefigure(ar,loc.clone().add(0.5,-(2*grose)+0.1,0.5),3);
     }
 
     @Override
@@ -159,23 +126,10 @@ class Dame extends Figuren{
 
     private boolean white;
     private ArmorStand ar;
-    public Dame(Location loc, Material mat, int customModelData, boolean white){
+    public Dame(Location loc, Material mat, int customModelData, boolean white,double grose){
         this.white=white;
-
-        ar = loc.getWorld().spawn(loc.clone().add(0.5,-3,0.5),ArmorStand.class);
-        ar.setInvulnerable(true);
-        ar.setCustomName((white ? ChatColor.WHITE : ChatColor.DARK_GRAY)+"Dame");
-        ar.setCustomNameVisible(false);
-        ar.setGravity(false);
-        ar.setVisible(false);
-        ar.setMarker(true);
-        ItemStack helmet = new ItemStack(mat);
-        ItemMeta meta = helmet.getItemMeta();
-        meta.setCustomModelData(customModelData);
-        helmet.setItemMeta(meta);
-        ar.setHelmet(helmet);
-
-        movefigure(ar,loc.clone().add(0.5,-1.9,0.5),3);
+        ar = getpasteArmorStand(loc,(white ? ChatColor.WHITE : ChatColor.DARK_GRAY)+"Dame",mat,customModelData,grose);
+        movefigure(ar,loc.clone().add(0.5,-(2*grose)+0.1,0.5),3);
     }
 
     @Override
@@ -193,23 +147,10 @@ class Koenig extends Figuren{
 
     private boolean white;
     private ArmorStand ar;
-    public Koenig(Location loc,Material mat,int customModelData, boolean white){
+    public Koenig(Location loc,Material mat,int customModelData, boolean white,double grose){
         this.white=white;
-
-        ar = loc.getWorld().spawn(loc.clone().add(0.5,-3,0.5),ArmorStand.class);
-        ar.setInvulnerable(true);
-        ar.setCustomName((white ? ChatColor.WHITE : ChatColor.DARK_GRAY)+"König");
-        ar.setCustomNameVisible(false);
-        ar.setGravity(false);
-        ar.setVisible(false);
-        ar.setMarker(true);
-        ItemStack helmet = new ItemStack(mat);
-        ItemMeta meta = helmet.getItemMeta();
-        meta.setCustomModelData(customModelData);
-        helmet.setItemMeta(meta);
-        ar.setHelmet(helmet);
-
-        movefigure(ar,loc.clone().add(0.5,-1.9,0.5),3);
+        ar = getpasteArmorStand(loc,(white ? ChatColor.WHITE : ChatColor.DARK_GRAY)+"König",mat,customModelData,grose);
+        movefigure(ar,loc.clone().add(0.5,-(2*grose)+0.1,0.5),3);
     }
 
     @Override
@@ -222,3 +163,5 @@ class Koenig extends Figuren{
         return white;
     }
 }
+
+

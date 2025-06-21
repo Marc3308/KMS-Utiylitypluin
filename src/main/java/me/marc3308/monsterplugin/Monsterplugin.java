@@ -1,5 +1,9 @@
 package me.marc3308.monsterplugin;
 
+import me.marc3308.kMSCustemModels.extras;
+import me.marc3308.monsterplugin.gui.guiclicker;
+import me.marc3308.monsterplugin.gui.guiverteiler;
+import me.marc3308.monsterplugin.objekts.settings;
 import me.marc3308.monsterplugin.spiele.chess.chessevents;
 import me.marc3308.monsterplugin.spiele.chess.chessutilitys;
 import me.marc3308.monsterplugin.commands.*;
@@ -37,64 +41,66 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
 
     public static LocalDateTime cycleStartTime =LocalDateTime.now(ZoneId.of("Europe/Berlin"));
     public static Monsterplugin plugin;
+    public static settings settings;
 
     @Override
     public void onEnable() {
 
         plugin = this;
-
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        if(chunklust.size()>=1 && eiss.getBoolean("orgen"+".Starteating")){
-                            oregen.deletus(chunklust.get(0));
-                            chunklust.remove(0);
-                        }
-
-                        if(eiss.get("dodaynighttime")!=null && eiss.getBoolean("dodaynighttime")){
-                            //tagnacht
-                            int wishtime=eiss.getInt("daynightinminuten")*60;
-                            double ticksPerSecond = 24000L / (double) wishtime;
-
-                            // Get the current time in the real world
-                            LocalDateTime now = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
-
-                            // Calculate the time passed since the cycle started in seconds
-                            long timePassedInSeconds = Duration.between(cycleStartTime, now).getSeconds();
-
-                            // Calculate how far into the 3-hour cycle we are (as a percentage)
-                            double cycleProgress = (double) timePassedInSeconds / wishtime;
-
-                            // Calculate the new Minecraft time based on cycle progress
-                            long newMinecraftTime = (long) (cycleProgress * 24000L);
-
-                            //warnungen
-                            if(now.getHour()==0 && now.getMinute()==0 && now.getSecond()<2)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.GREEN+"Warnung",ChatColor.GREEN+"Der Server schließt in einer Stunde");
-                            if(now.getHour()==0 && now.getMinute()==30 && now.getSecond()<2)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.YELLOW+"Warnung",ChatColor.YELLOW+"Der Server schließt in einer Halben Stunde");
-                            if(now.getHour()==0 && now.getMinute()==55 && now.getSecond()<2)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.RED+"Warnung",ChatColor.RED+"Der Server schließt in fünf Minuten");
-                            if(now.getHour()==0 && now.getMinute()==59 && now.getSecond()>=45)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.DARK_RED+String.valueOf((58-now.getSecond())),"");
-                            if(now.getHour()==0 && now.getMinute()==59 && now.getSecond()>=58)for (Player p : Bukkit.getOnlinePlayers())p.kick();
-
-                            // Set the world time, making sure it stays within the 0-24000 ticks range
-                            World world = Bukkit.getWorld("world");
-                            world.setTime(newMinecraftTime % 24000L);
-                        }
-                    }
-        },0,20);
-
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-            @Override
-            public void run() {
-
-                if(eiss.getBoolean("orgen"+".LowTOBig")){
-                    oregen.sortLocationsByMostNegativeX(chunklust);
-                } else {
-                    oregen.sortLocationsByMostPositiveX(chunklust);
-                }
-                File eisfile = new File("plugins/KMS Plugins/DingeDiePassierenMussen","Eistellungen.yml");
-                eiss=YamlConfiguration.loadConfiguration(eisfile);
-            }
-        },0,20*10);
+        settings = new settings();
+//
+//        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if(chunklust.size()>=1 && eiss.getBoolean("orgen"+".Starteating")){
+//                            oregen.deletus(chunklust.get(0));
+//                            chunklust.remove(0);
+//                        }
+//
+//                        if(eiss.get("dodaynighttime")!=null && eiss.getBoolean("dodaynighttime")){
+//                            //tagnacht
+//                            int wishtime=eiss.getInt("daynightinminuten")*60;
+//                            double ticksPerSecond = 24000L / (double) wishtime;
+//
+//                            // Get the current time in the real world
+//                            LocalDateTime now = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
+//
+//                            // Calculate the time passed since the cycle started in seconds
+//                            long timePassedInSeconds = Duration.between(cycleStartTime, now).getSeconds();
+//
+//                            // Calculate how far into the 3-hour cycle we are (as a percentage)
+//                            double cycleProgress = (double) timePassedInSeconds / wishtime;
+//
+//                            // Calculate the new Minecraft time based on cycle progress
+//                            long newMinecraftTime = (long) (cycleProgress * 24000L);
+//
+//                            //warnungen
+//                            if(now.getHour()==0 && now.getMinute()==0 && now.getSecond()<2)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.GREEN+"Warnung",ChatColor.GREEN+"Der Server schließt in einer Stunde");
+//                            if(now.getHour()==0 && now.getMinute()==30 && now.getSecond()<2)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.YELLOW+"Warnung",ChatColor.YELLOW+"Der Server schließt in einer Halben Stunde");
+//                            if(now.getHour()==0 && now.getMinute()==55 && now.getSecond()<2)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.RED+"Warnung",ChatColor.RED+"Der Server schließt in fünf Minuten");
+//                            if(now.getHour()==0 && now.getMinute()==59 && now.getSecond()>=45)for (Player p : Bukkit.getOnlinePlayers())p.sendTitle(ChatColor.DARK_RED+String.valueOf((58-now.getSecond())),"");
+//                            if(now.getHour()==0 && now.getMinute()==59 && now.getSecond()>=58)for (Player p : Bukkit.getOnlinePlayers())p.kick();
+//
+//                            // Set the world time, making sure it stays within the 0-24000 ticks range
+//                            World world = Bukkit.getWorld("world");
+//                            world.setTime(newMinecraftTime % 24000L);
+//                        }
+//                    }
+//        },0,3);
+//
+//        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                if(eiss.getBoolean("orgen"+".LowTOBig")){
+//                    oregen.sortLocationsByMostNegativeX(chunklust);
+//                } else {
+//                    oregen.sortLocationsByMostPositiveX(chunklust);
+//                }
+//                File eisfile = new File("plugins/KMS Plugins/DingeDiePassierenMussen","Eistellungen.yml");
+//                eiss=YamlConfiguration.loadConfiguration(eisfile);
+//            }
+//        },0,20*10);
 
         Bignumb=eiss.getInt("orgen"+".Bignumb");
 
@@ -143,8 +149,15 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         getCommand("cosmetic").setExecutor(new comamndmenu());
         getCommand("cosmetics").setExecutor(new Commandmanager());
         getCommand("spiele").setExecutor(new spielecommandmanager());
+        getCommand("loadworldtomax").setExecutor(new loadworldtomax());
         //getCommand("delwol").setExecutor(new delet());
 
+
+        //neu kms custemmodl
+        //extras.adminlist.add("COMMAND_BLOCK;Grund Auswahl;27"); //todo chess intigrieren
+        Bukkit.getPluginManager().registerEvents(new guiclicker(),this);
+        Bukkit.getPluginManager().registerEvents(new guiverteiler(),this);
+        extras.adminlist.add("STRUCTURE_BLOCK;Weltenfresser;45");
 
         //load cosmetiks
         Cosmetikobjekt.loadlist();
@@ -240,6 +253,7 @@ public final class Monsterplugin extends JavaPlugin implements Listener {
         }
         Cosmetikobjekt.savecosmis();
         chessutilitys.savebords();
+        settings.save();
         Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED+"Shit is Saved");
         chessutilitys.schachliste.stream().filter(s -> s.hasGame() && s.getGame().isGamehasstarted()).forEach(s -> s.setGame(null));
     }

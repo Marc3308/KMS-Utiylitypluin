@@ -17,8 +17,9 @@ public class Chessbord {
     private int time;
     private boolean history;
     private int timer;
+    private double grosse;
 
-    public Chessbord(Location loc, String name, boolean help, int time, boolean history, int timer) {
+    public Chessbord(Location loc, String name, boolean help, int time, boolean history, int timer, double grosse) {
         this.time =time;
         this.help=help;
         this.name = name;
@@ -26,12 +27,21 @@ public class Chessbord {
         this.timer = timer;
         this.feltstart =loc.getBlock().getLocation();
         this.feltend =loc.getBlock().getLocation().add(8,0,8);
+        this.grosse = grosse;
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if(!Bukkit.getOnlinePlayers().isEmpty())loc.getWorld().spawnParticle(END_ROD,loc.clone().add(i,1,j),5,0,0,0,0.01);
             }
         }
+    }
+
+    public double getGrosse() {
+        return grosse;
+    }
+
+    public void setGrosse(double grosse) {
+        this.grosse = grosse;
     }
 
     public boolean isHistory() {
